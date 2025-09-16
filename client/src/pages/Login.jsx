@@ -5,13 +5,17 @@ import http from '../utils/http';
 import { useNavigate } from 'react-router';
 
 const Login = () => {
-  const navigate = useNavigate
+  const navigate = useNavigate()
   const [isLoaded, setIsLoaded] = useState(false);
   const [form, setForm] = useState({
     email: '',
     password: '',
   });
 
+  useEffect(() => {
+    setIsLoaded(true);
+  }, []);
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm({
@@ -47,9 +51,6 @@ const Login = () => {
   
   } 
 
-  useEffect(() => {
-    setIsLoaded(true);
-  }, []);
 
   console.log(form);
 

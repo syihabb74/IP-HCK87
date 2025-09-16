@@ -7,6 +7,7 @@ const CoinCard = ({
   volume,
   marketCap,
   icon,
+  image,
   isPositive,
   onTrade
 }) => {
@@ -17,7 +18,18 @@ const CoinCard = ({
       </td>
       <td className="px-6 py-4">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-gradient-to-r from-cyan-400 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+          {image ? (
+            <img
+              src={image}
+              alt={`${name} logo`}
+              className="w-8 h-8 rounded-full object-cover"
+              onError={(e) => {
+                e.target.style.display = 'none';
+                e.target.nextSibling.style.display = 'flex';
+              }}
+            />
+          ) : null}
+          <div className="w-8 h-8 bg-gradient-to-r from-cyan-400 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm" style={{display: image ? 'none' : 'flex'}}>
             {icon}
           </div>
           <div>

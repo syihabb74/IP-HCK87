@@ -1,6 +1,6 @@
 const { ethplorer } = require("../helpers/http");
-const { User } = require("../models");
-const { Wallet } = require("../models");
+const { User, Wallet, Profile } = require("../models");
+
 
 // https://deep-index.moralis.io/api/v2.2/:address/erc20 endpoint get token list
 
@@ -27,7 +27,17 @@ class WalletController {
 
       const userId = req.user.id;
       const userAndWallets = await User.findByPk(userId, {
-        include: Wallet
+        include: [
+          {
+            model: Wallet,
+            attributes: { exclude: ['createdAt', 'updatedAt', 'UserId'] }
+          },
+          {
+            model: Profile,
+            attributes: ['username']
+          }
+        ],
+        attributes: { exclude: ['password', 'createdAt', 'updatedAt'] }
       });
       res.status(200).json(userAndWallets);
 
@@ -46,7 +56,7 @@ class WalletController {
       const wallet = await Wallet.findByPk(walletId);
       const updatedWallet = await wallet.update({ address, walletName });
       res.status(200).json(updatedWallet);
-      
+
     } catch (error) {
 
       next(error);

@@ -1,9 +1,42 @@
 import { Link, useLocation } from 'react-router';
+import { useState, useEffect } from 'react';
 import Logo from './Logo';
+import http from '../utils/http';
 
 const Navbar = () => {
   const location = useLocation();
   const isAuthenticated = location.pathname.startsWith('/dashboard') || location.pathname === '/ai-assistant' || location.pathname === '/markets' || location.pathname === '/settings' || location.pathname === '/portofolio';
+
+  const [userData, setUserData] = useState({
+    fullName: '',
+    Profile: { username: '' }
+  });
+
+  const fetchUserData = async () => {
+    if (isAuthenticated) {
+      try {
+        const response = await http({
+          method: 'GET',
+          url: '/wallets',
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('access_token')}`
+          }
+        });
+        setUserData(response.data);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchUserData();
+  }, [isAuthenticated]);
+
+  const getInitials = (name) => {
+    if (!name) return 'U';
+    return name.split(' ').map(word => word[0]).join('').toUpperCase().slice(0, 2);
+  };
 
   return (
     <nav className="w-full bg-slate-900/80 backdrop-blur-xl border-b border-slate-700/50 sticky top-0 z-50">
@@ -98,10 +131,10 @@ const Navbar = () => {
                 <div className="relative group">
                   <button className="flex items-center gap-3 bg-slate-800 hover:bg-slate-700 rounded-lg px-3 py-2 transition-all duration-300">
                     <div className="w-8 h-8 bg-gradient-to-r from-cyan-400 to-blue-600 rounded-full flex items-center justify-center">
-                      <span className="text-white font-semibold text-sm">JD</span>
+                      <span className="text-white font-semibold text-sm">{getInitials(userData.fullName)}</span>
                     </div>
                     <div className="text-left hidden sm:block">
-                      <div className="text-white text-sm font-medium">John Doe</div>
+                      <div className="text-white text-sm font-medium">{userData.fullName || userData.Profile?.username}</div>
                       <div className="text-slate-400 text-xs">Premium</div>
                     </div>
                     <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

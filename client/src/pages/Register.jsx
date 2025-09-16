@@ -2,14 +2,17 @@ import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Logo from '../components/Logo';
 import { ethers } from 'ethers';
+import { useNavigate } from 'react-router';
+import http from '../utils/http';
 
 const Register = () => {
+  const navigate = useNavigate();
+
   const [isLoaded, setIsLoaded] = useState(false);
   const [form, setForm] = useState({
     fullName: '',
     email: '',
-    password: '',
-    confirmPassword: ''
+    password: ''
   });
 
   const handleChange = (e) => {
@@ -24,6 +27,33 @@ const Register = () => {
     setIsLoaded(true);
   }, []);
 
+  const registerSubmit = async () => {
+    
+    try {
+
+      const response = await http({
+        method: 'POST',
+        url: '/register',
+        data: form
+      })
+
+      navigate('/login');
+      
+      
+    } catch (error) {
+      
+      console.error(error);
+
+    }
+
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    registerSubmit();
+  }
+
+  console.log(form);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white overflow-hidden relative font-inter">
@@ -55,7 +85,7 @@ const Register = () => {
           </div>
 
           {/* Register Form */}
-          <form className={`space-y-6 mb-8 transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{transitionDelay: '600ms'}}>
+          <form onSubmit={handleSubmit} className={`space-y-6 mb-8 transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{transitionDelay: '600ms'}}>
             <div className="text-left">
               <label htmlFor="fullName" className="block text-sm font-medium text-slate-300 mb-2">
                 Full Name
@@ -64,7 +94,6 @@ const Register = () => {
                 type="text"
                 id="fullName"
                 name="fullName"
-                value={form.fullName}
                 onChange={handleChange}
                 placeholder="Enter your full name"
                 className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all duration-300"
@@ -80,7 +109,6 @@ const Register = () => {
                 type="email"
                 id="email"
                 name="email"
-                value={form.email}
                 onChange={handleChange}
                 placeholder="Enter your email"
                 className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all duration-300"
@@ -97,27 +125,8 @@ const Register = () => {
                   type="password"
                   id="password"
                   name="password"
-                  value={form.password}
                   onChange={handleChange}
                   placeholder="Create a strong password"
-                  className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all duration-300 pr-12"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="text-left">
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-300 mb-2">
-                Confirm Password
-              </label>
-              <div className="relative">
-                <input
-                  type="password"
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  value={form.confirmPassword}
-                  onChange={handleChange}
-                  placeholder="Confirm your password"
                   className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all duration-300 pr-12"
                   required
                 />

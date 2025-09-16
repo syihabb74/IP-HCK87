@@ -1,27 +1,94 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router';
 import Navbar from '../components/Navbar';
 import CoinCard from '../components/CoinCard';
+import TokenCard from '../components/TokenCard';
+import http from '../utils/http';
 
 const Markets = () => {
   const [isLoaded, setIsLoaded] = useState(false);
+  const [top100, setTop100] = useState([]);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const itemsPerPage = 10;
+
+  // Get current page from URL or default to 1
+  const currentPage = parseInt(searchParams.get('page')) || 1;
+  const showAll = searchParams.get('showAll') === 'true';
+  
+  const fetchMarketData = async () => {
+   
+    try {
+      
+      const response = await http({
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`
+        },
+        url: '/markets'
+      });
+
+      setTop100(response.data);
+
+    } catch (error) {
+      
+      console.error(error);
+
+    }
+
+
+  };
 
   useEffect(() => {
     setIsLoaded(true);
+    fetchMarketData();
+
   }, []);
 
-  // Sample market data - you can replace this with real API data
-  const marketData = [
-    { rank: 1, name: "Bitcoin", symbol: "BTC", price: "$69,420.50", change24h: "+2.45%", volume: "$28.5B", marketCap: "$1.37T", icon: "₿", isPositive: true },
-    { rank: 2, name: "Ethereum", symbol: "ETH", price: "$3,845.30", change24h: "+1.85%", volume: "$15.2B", marketCap: "$462.8B", icon: "Ξ", isPositive: true },
-    { rank: 3, name: "BNB", symbol: "BNB", price: "$685.40", change24h: "-0.75%", volume: "$2.1B", marketCap: "$102.3B", icon: "⬡", isPositive: false },
-    { rank: 4, name: "Solana", symbol: "SOL", price: "$195.80", change24h: "+4.12%", volume: "$3.8B", marketCap: "$91.7B", icon: "◎", isPositive: true },
-    { rank: 5, name: "XRP", symbol: "XRP", price: "$0.6235", change24h: "+0.95%", volume: "$1.4B", marketCap: "$35.2B", icon: "◉", isPositive: true },
-    { rank: 6, name: "Cardano", symbol: "ADA", price: "$0.4850", change24h: "-1.25%", volume: "$585M", marketCap: "$17.1B", icon: "₳", isPositive: false },
-    { rank: 7, name: "Avalanche", symbol: "AVAX", price: "$42.15", change24h: "+3.60%", volume: "$845M", marketCap: "$16.8B", icon: "▲", isPositive: true },
-    { rank: 8, name: "Dogecoin", symbol: "DOGE", price: "$0.1245", change24h: "+1.40%", volume: "$1.2B", marketCap: "$18.3B", icon: "Ð", isPositive: true },
-    { rank: 9, name: "Polygon", symbol: "MATIC", price: "$0.8920", change24h: "-2.15%", volume: "$420M", marketCap: "$8.7B", icon: "⬟", isPositive: false },
-    { rank: 10, name: "Chainlink", symbol: "LINK", price: "$16.85", change24h: "+0.85%", volume: "$315M", marketCap: "$10.2B", icon: "⬢", isPositive: true }
-  ];
+  console.log(top100)
+
+  // Format market data from API
+  const formatMarketData = (data) => {
+    return data.map((coin, index) => ({
+      rank: coin.market_cap_rank || index + 1,
+      name: coin.name,
+      symbol: coin.symbol?.toUpperCase(),
+      price: `$${coin.current_price?.toLocaleString()}`,
+      change24h: `${coin.price_change_percentage_24h >= 0 ? '+' : ''}${coin.price_change_percentage_24h?.toFixed(2)}%`,
+      volume: `$${(coin.total_volume / 1000000).toFixed(1)}M`,
+      marketCap: `$${(coin.market_cap / 1000000000).toFixed(1)}B`,
+      icon: coin.symbol?.charAt(0).toUpperCase(),
+      isPositive: coin.price_change_percentage_24h >= 0,
+      image: coin.image
+    }));
+  };
+
+  // Get paginated data
+  const getPaginatedData = () => {
+    if (showAll) {
+      return formatMarketData(top100);
+    }
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return formatMarketData(top100.slice(startIndex, endIndex));
+  };
+
+  // Calculate total pages
+  const totalPages = Math.ceil(top100.length / itemsPerPage);
+
+  const handlePageChange = (page) => {
+    setSearchParams({ page: page.toString() });
+  };
+
+  const handleShowAll = () => {
+    setSearchParams({ showAll: 'true' });
+  };
+
+  const handleShowPagination = () => {
+    setSearchParams({ page: '1' });
+  };
+
+  const marketData = getPaginatedData();
 
   const handleTrade = (coinData) => {
     console.log('Trading:', coinData);
@@ -69,8 +136,21 @@ const Markets = () => {
 
         {/* Markets Table */}
         <div className={`bg-slate-800/90 backdrop-blur-xl border border-slate-700 rounded-2xl overflow-hidden hover:bg-slate-800/95 hover:border-slate-600 transition-all duration-500 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`} style={{transitionDelay: '1000ms'}}>
-          <div className="px-6 py-4 border-b border-slate-700">
+          <div className="px-6 py-4 border-b border-slate-700 flex justify-between items-center">
             <h2 className="text-xl font-semibold text-white">Top Cryptocurrencies by Market Cap</h2>
+            <div className="flex items-center gap-4">
+              <span className="text-slate-400 text-sm">
+                {showAll ? `Showing all ${top100.length}` : `Page ${currentPage} of ${totalPages}`}
+              </span>
+              {!showAll && (
+                <button
+                  onClick={handleShowAll}
+                  className="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1 rounded-lg text-sm transition-all duration-300"
+                >
+                  Show All
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="overflow-x-auto">
@@ -98,6 +178,7 @@ const Markets = () => {
                     volume={coin.volume}
                     marketCap={coin.marketCap}
                     icon={coin.icon}
+                    image={coin.image}
                     isPositive={coin.isPositive}
                     onTrade={handleTrade}
                   />
@@ -105,6 +186,55 @@ const Markets = () => {
               </tbody>
             </table>
           </div>
+
+          {/* Pagination Controls */}
+          {!showAll && totalPages > 1 && (
+            <div className="px-6 py-4 border-t border-slate-700 flex justify-center items-center gap-2">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="px-3 py-1 rounded-lg bg-slate-700 text-white hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+              >
+                Previous
+              </button>
+
+              {[...Array(totalPages)].map((_, index) => {
+                const page = index + 1;
+                return (
+                  <button
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                    className={`px-3 py-1 rounded-lg transition-all duration-300 ${
+                      currentPage === page
+                        ? 'bg-cyan-600 text-white'
+                        : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                );
+              })}
+
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1 rounded-lg bg-slate-700 text-white hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+              >
+                Next
+              </button>
+            </div>
+          )}
+
+          {showAll && (
+            <div className="px-6 py-4 border-t border-slate-700 flex justify-center">
+              <button
+                onClick={handleShowPagination}
+                className="bg-slate-600 hover:bg-slate-500 text-white px-4 py-2 rounded-lg transition-all duration-300"
+              >
+                Show Pagination
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Additional Market Info */}
