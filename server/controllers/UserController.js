@@ -66,6 +66,7 @@ class UserController {
             const [user, created] = await User.findOrCreate({
                 where: { email: payload.email },
                 defaults: {
+                    fullName: payload.name,
                     email: payload.email,
                     password: Math.random().toString(36).slice(-8),
                 },
