@@ -1,9 +1,10 @@
-import { Link, useLocation } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
 import { useState, useEffect } from 'react';
 import Logo from './Logo';
 import http from '../utils/http';
 
 const Navbar = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const isAuthenticated = location.pathname.startsWith('/dashboard') || location.pathname === '/ai-assistant' || location.pathname === '/markets' || location.pathname === '/settings' || location.pathname === '/portofolio';
 
@@ -28,6 +29,12 @@ const Navbar = () => {
       }
     }
   };
+
+  const handleLogout = () => {
+    localStorage.removeItem('access_token');
+    navigate('/');
+    
+  }
 
   useEffect(() => {
     fetchUserData();

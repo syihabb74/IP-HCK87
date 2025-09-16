@@ -2,8 +2,6 @@ const { ethplorer } = require("../helpers/http");
 const { User, Wallet, Profile } = require("../models");
 
 
-// https://deep-index.moralis.io/api/v2.2/:address/erc20 endpoint get token list
-
 class WalletController {
 
 
@@ -11,8 +9,8 @@ class WalletController {
     try {
 
       const userId = req.user.id;
-      const { address } = req.body;
-      const newWallet = await Wallet.create({ address, UserId: userId });
+      const { address, walletName } = req.body;
+      const newWallet = await Wallet.create({walletName ,address, UserId: userId });
       res.status(201).json(newWallet);
 
     } catch (error) {
