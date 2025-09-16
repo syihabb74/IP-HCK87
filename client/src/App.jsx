@@ -1,6 +1,3 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 import Dashboard from './pages/Dashboard'
 import { BrowserRouter, Route, Routes } from 'react-router'
@@ -10,11 +7,11 @@ import Home from './pages/Home'
 import AiAssistant from './pages/AiAssistant'
 import Markets from './pages/Markets'
 import Settings from './pages/Settings'
+import Portofolio from './pages/Portofolio'
 
 function App() {
-  const [count, setCount] = useState(0)
 
-  return (<BrowserRouter>
+  return <BrowserRouter>
     <Routes>
       <Route path='/' element={<Home />} />
       <Route path='/dashboard' element={<Dashboard />} />
@@ -23,8 +20,9 @@ function App() {
       <Route path='/ai-assistant' element={< AiAssistant/>} />
       <Route path='/markets' element={<Markets />} />
       <Route path='/settings' element={<Settings />} />
+      <Route path='/portofolio' element={<Portofolio />} />
     </Routes>
-  </BrowserRouter>)
+  </BrowserRouter>
 
 }
 

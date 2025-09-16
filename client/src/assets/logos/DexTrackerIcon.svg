@@ -1,0 +1,59 @@
+<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="iconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#22D3EE;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2563EB;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Main Icon Background -->
+  <circle cx="30" cy="30" r="28" fill="url(#iconGradient)" filter="url(#glow)"/>
+  <circle cx="30" cy="30" r="25" fill="url(#iconGradient)"/>
+
+  <!-- Central Hub -->
+  <circle cx="30" cy="30" r="4" fill="white"/>
+
+  <!-- Tech Network Lines -->
+  <path d="M30 15 L30 25" stroke="white" stroke-width="2" opacity="0.8"/>
+  <path d="M30 35 L30 45" stroke="white" stroke-width="2" opacity="0.8"/>
+  <path d="M15 30 L25 30" stroke="white" stroke-width="2" opacity="0.8"/>
+  <path d="M35 30 L45 30" stroke="white" stroke-width="2" opacity="0.8"/>
+
+  <!-- Diagonal Connections -->
+  <path d="M21 21 L26 26" stroke="white" stroke-width="1.5" opacity="0.6"/>
+  <path d="M34 34 L39 39" stroke="white" stroke-width="1.5" opacity="0.6"/>
+  <path d="M39 21 L34 26" stroke="white" stroke-width="1.5" opacity="0.6"/>
+  <path d="M26 34 L21 39" stroke="white" stroke-width="1.5" opacity="0.6"/>
+
+  <!-- Data Nodes -->
+  <circle cx="30" cy="15" r="3" fill="white"/>
+  <circle cx="30" cy="45" r="3" fill="white"/>
+  <circle cx="15" cy="30" r="3" fill="white"/>
+  <circle cx="45" cy="30" r="3" fill="white"/>
+
+  <!-- Corner Tech Elements -->
+  <circle cx="21" cy="21" r="2" fill="white" opacity="0.8"/>
+  <circle cx="39" cy="39" r="2" fill="white" opacity="0.8"/>
+  <circle cx="39" cy="21" r="2" fill="white" opacity="0.8"/>
+  <circle cx="21" cy="39" r="2" fill="white" opacity="0.8"/>
+
+  <!-- Financial Chart Overlay -->
+  <path d="M18 38 L22 34 L26 36 L30 30 L34 32 L38 28 L42 30" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.7"/>
+
+  <!-- Digital Pixels -->
+  <rect x="12" y="12" width="1.5" height="1.5" fill="white" opacity="0.5"/>
+  <rect x="15" y="12" width="1.5" height="1.5" fill="white" opacity="0.7"/>
+  <rect x="46" y="12" width="1.5" height="1.5" fill="white" opacity="0.5"/>
+  <rect x="43" y="15" width="1.5" height="1.5" fill="white" opacity="0.7"/>
+  <rect x="12" y="46" width="1.5" height="1.5" fill="white" opacity="0.5"/>
+  <rect x="15" y="43" width="1.5" height="1.5" fill="white" opacity="0.7"/>
+  <rect x="46" y="46" width="1.5" height="1.5" fill="white" opacity="0.5"/>
+  <rect x="43" y="43" width="1.5" height="1.5" fill="white" opacity="0.7"/>
+</svg>

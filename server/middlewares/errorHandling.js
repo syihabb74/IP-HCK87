@@ -1,5 +1,5 @@
 const errorHandling = (err,_req,res,_next) => {
-
+    console.log(err)
     if (err.name === 'JsonWebTokenError') return res.status(401).json({message : 'Invalid Token'});
     if (err.name === 'BadRequest') return res.status(400).json({message : err.message});
     if (err.name === 'Unauthorized') return res.status(401).json({message : err.message});

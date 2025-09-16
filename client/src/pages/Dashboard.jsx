@@ -1,58 +1,60 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import TokenCard from '../components/TokenCard';
 import TransactionCard from '../components/TransactionCard';
 import Navbar from '../components/Navbar';
 
 const Dashboard = () => {
-  const scrollToPortfolio = () => {
-    document.getElementById('portfolio')?.scrollIntoView({
-      behavior: 'smooth'
-    });
-  };
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    setIsLoaded(true);
+  }, []);
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white overflow-x-hidden font-inter">
       <Navbar />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-        <section className="text-center mb-16 py-16">
+        <section className={`text-center mb-16 py-16 transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`}>
           <h1 className="text-5xl md:text-6xl font-extrabold mb-6 bg-gradient-to-r from-cyan-400 to-blue-600 bg-clip-text text-transparent leading-tight">
             Track Your Crypto Portfolio Like a Pro
           </h1>
           <p className="text-lg text-slate-400 mb-8 max-w-2xl mx-auto px-4 leading-relaxed">
             Monitor your cryptocurrency investments with real-time data, advanced analytics, and professional insights for informed trading decisions.
           </p>
-          <button
-            onClick={scrollToPortfolio}
-            className="bg-cyan-500 hover:bg-cyan-600 text-white px-8 py-4 rounded-lg text-base font-semibold transition-all duration-300 inline-flex items-center gap-2"
+          <Link
+            to="/portofolio"
+            className="bg-cyan-500 hover:bg-cyan-600 text-white px-8 py-4 rounded-lg text-base font-semibold transition-all duration-300 inline-flex items-center gap-2 hover:-translate-y-1 hover:shadow-lg hover:shadow-cyan-400/30"
           >
             View Portfolio
-          </button>
+          </Link>
         </section>
 
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-          <div className="bg-slate-800/80 backdrop-blur-xl border border-slate-700 rounded-2xl p-8 text-left">
+          <div className={`bg-slate-800/80 backdrop-blur-xl border border-slate-700 rounded-2xl p-8 text-left hover:bg-slate-800/90 hover:border-slate-600 hover:-translate-y-2 hover:shadow-2xl hover:shadow-cyan-400/20 transition-all duration-500 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`} style={{transitionDelay: '200ms'}}>
             <div className="text-4xl font-extrabold text-cyan-400 mb-2">$2.5M+</div>
             <div className="text-slate-400 text-sm uppercase tracking-wider font-medium">TOTAL VOLUME</div>
           </div>
-          <div className="bg-slate-800/80 backdrop-blur-xl border border-slate-700 rounded-2xl p-8 text-left">
+          <div className={`bg-slate-800/80 backdrop-blur-xl border border-slate-700 rounded-2xl p-8 text-left hover:bg-slate-800/90 hover:border-slate-600 hover:-translate-y-2 hover:shadow-2xl hover:shadow-cyan-400/20 transition-all duration-500 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`} style={{transitionDelay: '400ms'}}>
             <div className="text-4xl font-extrabold text-cyan-400 mb-2">$1.2B</div>
             <div className="text-slate-400 text-sm uppercase tracking-wider font-medium">TOTAL VALUE</div>
           </div>
-          <div className="bg-slate-800/80 backdrop-blur-xl border border-slate-700 rounded-2xl p-8 text-left">
+          <div className={`bg-slate-800/80 backdrop-blur-xl border border-slate-700 rounded-2xl p-8 text-left hover:bg-slate-800/90 hover:border-slate-600 hover:-translate-y-2 hover:shadow-2xl hover:shadow-cyan-400/20 transition-all duration-500 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`} style={{transitionDelay: '600ms'}}>
             <div className="text-4xl font-extrabold text-cyan-400 mb-2">150K+</div>
             <div className="text-slate-400 text-sm uppercase tracking-wider font-medium">DAILY TRADES</div>
           </div>
-          <div className="bg-slate-800/80 backdrop-blur-xl border border-slate-700 rounded-2xl p-8 text-left">
+          <div className={`bg-slate-800/80 backdrop-blur-xl border border-slate-700 rounded-2xl p-8 text-left hover:bg-slate-800/90 hover:border-slate-600 hover:-translate-y-2 hover:shadow-2xl hover:shadow-cyan-400/20 transition-all duration-500 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`} style={{transitionDelay: '800ms'}}>
             <div className="text-4xl font-extrabold text-cyan-400 mb-2">95%</div>
             <div className="text-slate-400 text-sm uppercase tracking-wider font-medium">ACCURACY</div>
           </div>
         </section>
 
-        <section className="mb-16" id="portfolio">
+        <section className={`mb-16 transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`} id="portfolio" style={{transitionDelay: '1000ms'}}>
           <h2 className="text-3xl font-bold text-center mb-8">Your Portfolio</h2>
 
-          <div className="bg-slate-800/90 backdrop-blur-xl border border-slate-700 rounded-2xl p-8 mb-8">
+          <div className="bg-slate-800/90 backdrop-blur-xl border border-slate-700 rounded-2xl p-8 mb-8 hover:bg-slate-800/95 hover:border-slate-600 transition-all duration-500">
             <div className="mb-8">
               <div className="text-5xl font-extrabold text-green-400 mb-2">$52,458,392</div>
               <p className="text-slate-400 text-lg">Total Portfolio Value</p>
@@ -127,10 +129,10 @@ const Dashboard = () => {
           </div>
         </section>
 
-        <section className="mb-12">
+        <section className={`mb-12 transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`} style={{transitionDelay: '1200ms'}}>
           <h2 className="text-3xl font-bold text-center mb-8">Recent Transactions</h2>
 
-          <div className="bg-slate-800/90 backdrop-blur-xl border border-slate-700 rounded-2xl p-8">
+          <div className="bg-slate-800/90 backdrop-blur-xl border border-slate-700 rounded-2xl p-8 hover:bg-slate-800/95 hover:border-slate-600 transition-all duration-500">
             <div className="space-y-1">
               <TransactionCard
                 type="buy"

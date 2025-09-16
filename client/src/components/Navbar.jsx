@@ -1,17 +1,17 @@
 import { Link, useLocation } from 'react-router';
+import Logo from './Logo';
 
 const Navbar = () => {
   const location = useLocation();
-  const isAuthenticated = location.pathname.startsWith('/dashboard') || location.pathname === '/ai-assistant' || location.pathname === '/markets' || location.pathname === '/settings';
+  const isAuthenticated = location.pathname.startsWith('/dashboard') || location.pathname === '/ai-assistant' || location.pathname === '/markets' || location.pathname === '/settings' || location.pathname === '/portofolio';
 
   return (
     <nav className="w-full bg-slate-900/80 backdrop-blur-xl border-b border-slate-700/50 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
           {/* Logo */}
-          <Link to={isAuthenticated ? "/dashboard" : "/"} className="flex items-center gap-3">
-            <span className="text-2xl">🔥</span>
-            <span className="text-2xl font-bold text-cyan-400">DexTracker</span>
+          <Link to={isAuthenticated ? "/dashboard" : "/"} className="flex items-center gap-3 hover:opacity-80 transition-opacity duration-300">
+            <Logo variant="compact" size="small" />
           </Link>
 
           {/* Navigation Links */}
@@ -26,7 +26,7 @@ const Navbar = () => {
                       : 'text-slate-400 hover:text-cyan-400'
                   }`}
                 >
-                  Portfolio
+                  Dashboard
                 </Link>
                 <Link
                   to="/markets"
@@ -37,6 +37,16 @@ const Navbar = () => {
                   }`}
                 >
                   Markets
+                </Link>
+                <Link
+                  to="/portofolio"
+                  className={`font-medium transition-colors duration-300 ${
+                    location.pathname === '/portofolio'
+                      ? 'text-cyan-400'
+                      : 'text-slate-400 hover:text-cyan-400'
+                  }`}
+                >
+                  Portfolio
                 </Link>
                 <Link
                   to="/ai-assistant"

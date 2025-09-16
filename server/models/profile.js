@@ -20,5 +20,12 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Profile',
   });
+
+  Profile.beforeCreate((profile) => {
+    if (!profile.username) {
+      profile.username = `user${Math.floor(1000 + Math.random() * 9000)}`;
+    }
+  });
+
   return Profile;
 };
