@@ -93,7 +93,9 @@ class UserController {
             const {username,email,fullName} = req.body;
             const user = await User.findOne({where : {email}});
             await user.update({email, fullName});
-            const profile = await Profile.findOne({where : req.user.id});
+            const profile = await Profile.findOne({where : {
+                UserId : req.user.id
+            }});
             await profile.update({username})
             res.status(200).json({user,profile})
 

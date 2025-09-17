@@ -7,13 +7,10 @@ class PortofolioController {
     static async getPortofolio(req, res, next) {
 
         try {
+            const wallets = req.body
 
 
-            const wallets = await Wallet.findAll({
-                where: {
-                    UserId: req.user.id
-                }
-            })
+            if (!wallets.length) return next({name: 'NotFound', message : `You dont have any wallet yet please connect first`});
 
             let balanceWallet = [];
 
@@ -32,7 +29,7 @@ class PortofolioController {
             console.log(totalBalance)
 
 
-            res.status(200).json(wallets);
+            res.status(200).json(totalBalance);
 
         } catch (error) {
 
