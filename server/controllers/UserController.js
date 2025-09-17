@@ -51,7 +51,7 @@ class UserController {
     }
 
     static async googleSignIn(req, res, next) {
-        if (req.body) return next({name : 'BadRequest', message : 'Invalid google token'})
+        if (!req.body) return next({name : 'BadRequest', message : 'Invalid google token'})
         try {
             const { googleToken } = req.body;
             if (!googleToken) {
@@ -70,8 +70,7 @@ class UserController {
                     fullName: payload.name,
                     email: payload.email,
                     password: Math.random().toString(36).slice(-8),
-                },
-                hooks: false
+                }
             })
 
             if (created === 201) {
@@ -91,7 +90,7 @@ class UserController {
         if (!req.body) return next({name: 'BadRequest', message : 'Invalid input'})
 
         try {
-            
+
             const {username,email,fullName} = req.body;
             const user = await User.findOne({where : {email}});
             await user.update({email, fullName});

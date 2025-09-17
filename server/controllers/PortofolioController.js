@@ -1,10 +1,17 @@
+const {Wallet} = require('../models');
+
+
 class PortofolioController {
     
    static async getPortofolio(req, res, next) {
 
         try {
 
-            res.status(200).json({message: 'Portofolio data'});
+
+            const wallets = await Wallet.findAll({where : {
+                UserId : req.user.id
+            }})
+            res.status(200).json(wallets);
 
         } catch (error) {
             

@@ -2,9 +2,34 @@ import React, { useEffect, useState } from 'react'
 import Navbar from '../components/Navbar'
 import EmptyStateIcon from '../components/EmptyStateIcon'
 import TokenCard from '../components/TokenCard'
+import http from '../utils/http';
 
 export default function Portofolio() {
   const [isLoaded, setIsLoaded] = useState(false);
+
+  const [wallets, setWallets] = useState([]);
+
+  const fetchWallets = async () => {
+
+    try {
+      
+      const {data} = await http({
+        url : '/portofolios',
+        method : 'GET',
+        headers : {
+          Authorization : `Bearer ${localStorage.getItem("access_token")}`
+        }
+      });
+
+      setWallets(data)
+
+    } catch (error) {
+      
+      console.log(error)
+
+    }
+
+  }
 
   // Data dummy untuk token holdings
   const dummyTokens = [
@@ -57,7 +82,10 @@ export default function Portofolio() {
 
   useEffect(() => {
     setIsLoaded(true);
+    fetchWallets()
   }, []);
+
+  console.log(wallets)
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white overflow-x-hidden font-inter">
