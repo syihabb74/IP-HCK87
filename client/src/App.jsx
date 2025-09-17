@@ -8,21 +8,28 @@ import AiAssistant from './pages/AiAssistant'
 import Markets from './pages/Markets'
 import Settings from './pages/Settings'
 import Portofolio from './pages/Portofolio'
+import store from './store/store'
+import { Provider } from 'react-redux'
 
 function App() {
 
-  return <BrowserRouter>
-    <Routes>
-      <Route path='/' element={<Home />} />
-      <Route path='/dashboard' element={<Dashboard />} />
-      <Route path='/login' element={<Login />} />
-      <Route path='/register' element={<Register />} />
-      <Route path='/ai-assistant' element={< AiAssistant/>} />
-      <Route path='/markets' element={<Markets />} />
-      <Route path='/settings' element={<Settings />} />
-      <Route path='/portofolio' element={<Portofolio />} />
-    </Routes>
-  </BrowserRouter>
+  return <Provider store={store}>
+    <BrowserRouter>
+      <Routes>
+        <Route path='/' element={<Home />} />
+        <Route path='/dashboard' element={<Dashboard />} />
+        <Route path='/login' element={<Login />} />
+        <Route path='/register' element={<Register />} />
+        <Route path='/ai-assistant' element={< AiAssistant />} />
+        <Route path='/markets' element={<Markets />} />
+        <Route path='/settings' element={<Settings />} />
+        <Route path='/portofolio' element={<Portofolio />} />
+      </Routes>
+    </BrowserRouter>
+  </Provider>
+
+
+
 
 }
 
