@@ -3,12 +3,14 @@ const { errorHandling } = require('../middlewares/errorHandling');
 const users = require('./users');
 const markets = require('./markets');
 const wallets = require('./wallets');
+const ai = require('./ai')
 const authentication = require('../middlewares/authentication');
 
 router.use(users);
 router.use(authentication);
 router.use(markets);
 router.use(wallets);
+router.use(ai)
 
 
 

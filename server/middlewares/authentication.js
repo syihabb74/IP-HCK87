@@ -8,6 +8,7 @@ const authentication = (req, _res, next) => {
         const access_token = req.headers.authorization.split(' ')[1];
         const decoded = verifyToken(access_token);
         req.user = decoded;
+        console.log(req.user)
         next();
     } catch (error) {
         next(error);

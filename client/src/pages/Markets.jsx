@@ -171,7 +171,7 @@ const Markets = () => {
             <h2 className="text-xl font-semibold text-white">Top Cryptocurrencies by Market Cap</h2>
             <div className="flex items-center gap-4">
               <span className="text-slate-400 text-sm">
-                {showAll ? `Showing all ${top100.length}` : `Page ${currentPage} of ${totalPages}`}
+                {showAll ? `Showing all ${data.length}` : `Page ${currentPage} of ${totalPages}`}
               </span>
               {!showAll && (
                 <button
