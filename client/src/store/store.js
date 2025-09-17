@@ -1,10 +1,12 @@
 import {configureStore} from '@reduxjs/toolkit'
 import { marketReducer } from '../slices/marketSlice'
+import { walletReducer } from '../slices/walletSlice'
 
 
 const store = configureStore({
     reducer: {
-        market : marketReducer 
+        market : marketReducer ,
+        wallet : walletReducer
     }
 })
 

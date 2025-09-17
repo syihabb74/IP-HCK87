@@ -1,44 +1,19 @@
 import { Link, useLocation, useNavigate } from 'react-router';
 import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import Logo from './Logo';
-import http from '../utils/http';
 
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const isAuthenticated = location.pathname.startsWith('/dashboard') || location.pathname === '/ai-assistant' || location.pathname === '/markets' || location.pathname === '/settings' || location.pathname === '/portofolio';
 
-  const [userData, setUserData] = useState({
-    fullName: '',
-    Profile: { username: '' }
-  });
-
-  const fetchUserData = async () => {
-    if (isAuthenticated) {
-      try {
-        const response = await http({
-          method: 'GET',
-          url: '/wallets',
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('access_token')}`
-          }
-        });
-        setUserData(response.data);
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      }
-    }
-  };
+  const { data: userData } = useSelector(state => state.wallet) || { data: { fullName: '', Profile: { username: '' } } };
 
   const handleLogout = () => {
     localStorage.removeItem('access_token');
     navigate('/');
-    
   }
-
-  useEffect(() => {
-    fetchUserData();
-  }, [isAuthenticated]);
 
   const getInitials = (name) => {
     if (!name) return 'U';

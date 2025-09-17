@@ -3,9 +3,21 @@ import { Link } from 'react-router';
 import TokenCard from '../components/TokenCard';
 import TransactionCard from '../components/TransactionCard';
 import Navbar from '../components/Navbar';
+import { useDispatch } from 'react-redux';
+import { fetchWallet } from '../slices/walletSlice';
+import { fetchMarkets } from '../slices/marketSlice';
 
 const Dashboard = () => {
+  const dispatch = useDispatch()
   const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    dispatch(fetchWallet())
+  }, []);
+
+  useEffect(() => {
+    dispatch(fetchMarkets())
+  }, []);
 
   useEffect(() => {
     setIsLoaded(true);

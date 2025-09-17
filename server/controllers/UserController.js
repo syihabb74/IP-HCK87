@@ -1,4 +1,3 @@
-const { Hooks } = require("sequelize/lib/hooks");
 const { comparePassword } = require("../helpers/bcrypt");
 const { signToken } = require("../helpers/jwt");
 const { User, Profile } = require("../models");
@@ -11,7 +10,7 @@ class UserController {
         try {
 
             if (!req.body) return next({ name: 'BadRequest', message: 'Invalid input' });
-            const { fullName, email, username } = req.body;
+            const { fullName, email, password } = req.body;
             await User.create({ fullName, email, password });
             res.status(200).json({ message: 'Register Successfully' })
 
@@ -85,7 +84,7 @@ class UserController {
     }
     
 
-    static async updateProfileUser () {
+    static async updateProfileUser (req,res,next) {
 
         if (!req.body) return next({name: 'BadRequest', message : 'Invalid input'})
 
@@ -94,7 +93,7 @@ class UserController {
             const {username,email,fullName} = req.body;
             const user = await User.findOne({where : {email}});
             await user.update({email, fullName});
-            const profile = await User.findOne({where : req.user.id});
+            const profile = await Profile.findOne({where : req.user.id});
             await profile.update({username})
             res.status(200).json({user,profile})
 

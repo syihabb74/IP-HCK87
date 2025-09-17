@@ -27,8 +27,6 @@ const AiAssistant = () => {
 
   useEffect(() => {
     setIsLoaded(true);
-    dispatch(fetchMarkets());
-    
   }, []);
 
   const handleSendPromptUser = async () => {

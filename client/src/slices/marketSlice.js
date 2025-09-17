@@ -17,7 +17,7 @@ const marketSlice = createSlice({
             state.error = ''
         })
         builder.addCase(fetchMarkets.fulfilled, (state, actions) => {
-            state.loading = true,
+            state.loading = false,
             state.data = actions.payload
         })
         builder.addCase(fetchMarkets.rejected, (state) => {

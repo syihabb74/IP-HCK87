@@ -12,18 +12,15 @@ const Markets = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const itemsPerPage = 10;
   const {loading, error, data} = useSelector(state => state.market);
-  const dispatch = useDispatch()
   const currentPage = parseInt(searchParams.get('page')) || 1;
   const showAll = searchParams.get('showAll') === 'true';
   
  
   useEffect(() => {
     setIsLoaded(true);
-    dispatch(fetchMarkets())
 
   }, []);
 
-  console.log(data)
 
   const formatMarketData = (data) => {
     return data.map((coin, index) => ({

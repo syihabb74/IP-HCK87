@@ -1,7 +1,7 @@
 const axios = require('axios');
 
-const ethplorer = axios.create({
-  baseURL: 'https://api.ethplorer.io/'
+const moralis = axios.create({
+  baseURL: 'https://deep-index.moralis.io/'
 });
 
 const coinGecko = axios.create({
@@ -9,7 +9,7 @@ const coinGecko = axios.create({
 });
 
 const http = {
-  ethplorer, coinGecko
+  moralis, coinGecko
 }
 
 module.exports = http;

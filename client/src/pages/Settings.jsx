@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import WalletCard from '../components/WalletCard';
-import { ethers, Wallet } from 'ethers';
+import { ethers } from 'ethers';
 import http from '../utils/http';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchWallet } from '../slices/walletSlice';
 
 const Settings = () => {
+  const {loading, error, data} = useSelector(state => state.wallet);
+  const dispatch = useDispatch()
   const [isLoaded, setIsLoaded] = useState(false);
   const [userData, setUserData] = useState({
     fullName: '',
@@ -29,7 +33,6 @@ const Settings = () => {
     console.log('showAddWalletForm state changed:', showAddWalletForm);
   }, [showAddWalletForm]);
 
-  // Auto show form when wallet data is populated from MetaMask
   useEffect(() => {
     if (walletForm.address && walletForm.walletName === 'MetaMask Wallet' && !editingWallet) {
       console.log('Auto-showing form based on MetaMask wallet data');
@@ -37,36 +40,14 @@ const Settings = () => {
     }
   }, [walletForm.address, walletForm.walletName, editingWallet]);
 
-  const fetchingWalletsAndUser = async () => {
-    console.log('🔥 fetchingWalletsAndUser started, current showAddWalletForm:', showAddWalletForm);
-
-    try {
-
-      const response = await http({
-        method: 'GET',
-        url: '/wallets',
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('access_token')}`
-        }
-      })
-
-      console.log('🔥 fetchingWalletsAndUser response:', response.data);
-
-      setUserData(response.data);
-      console.log('🔥 fetchingWalletsAndUser completed, showAddWalletForm should remain:', showAddWalletForm);
-
-    } catch (error) {
-
-      console.log('🔥 fetchingWalletsAndUser error:', error);
-
-    }
-  }
 
   useEffect(() => {
-    
-    fetchingWalletsAndUser();
+    if (data) {
+      setUserData(data)
+    }
+  }, [data]);
 
-  }, []);
+
 
 
 
@@ -110,10 +91,7 @@ const Settings = () => {
           });
 
           // Show form after a small delay to ensure state is updated
-          setTimeout(() => {
-            console.log('🔥 About to show form...');
-            setShowAddWalletForm(true);
-          }, 50);
+         
         }
 
         console.log('🔥 MetaMask connection completed');
@@ -137,10 +115,6 @@ const Settings = () => {
   const handleSubmitWallet = async (e) => {
     e.preventDefault();
 
-    if (!walletForm.address || !walletForm.walletName) {
-      alert('Please fill in both wallet address and wallet name');
-      return;
-    }
 
     try {
       if (editingWallet) {
@@ -156,14 +130,7 @@ const Settings = () => {
             Authorization: `Bearer ${localStorage.getItem('access_token')}`
           }
         });
-        console.log('Wallet updated successfully');
       } else {
-        // Create new wallet
-        const existingWallet = userData.Wallets.find(w => w.address === walletForm.address);
-        if (existingWallet) {
-          alert('This wallet address is already connected');
-          return;
-        }
 
         await http({
           method: 'POST',
@@ -176,19 +143,15 @@ const Settings = () => {
             Authorization: `Bearer ${localStorage.getItem('access_token')}`
           }
         });
-        console.log('New wallet added successfully');
       }
 
-      // Reset form and states
       setWalletForm({ address: '', walletName: '' });
       setShowAddWalletForm(false);
       setEditingWallet(null);
 
-      // Refresh data
-      fetchingWalletsAndUser();
+      dispatch(fetchWallet())
     } catch (error) {
       console.error('Error with wallet operation:', error);
-      alert('Failed to save wallet. Please try again.');
     }
   };
 
@@ -220,12 +183,15 @@ const Settings = () => {
         }
       });
 
-      fetchingWalletsAndUser();
+      dispatch(fetchWallet())
       console.log('Wallet deleted:', wallet.address);
     } catch (error) {
       console.error('Error deleting wallet:', error);
     }
   };
+  
+
+  console.log(data, "iniiiiiiiii dataaaaaaaaa")
 
 
   
