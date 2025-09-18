@@ -1,3 +1,17 @@
+// Mock the entire models module first
+jest.mock('../../models', () => ({
+  User: {
+    create: jest.fn(),
+    findOne: jest.fn(),
+    findAll: jest.fn(),
+    hasOne: jest.fn(),
+    hasMany: jest.fn(),
+    beforeCreate: jest.fn(),
+    afterCreate: jest.fn(),
+    associate: jest.fn()
+  }
+}));
+
 const { User } = require('../../models');
 const { hashPassword } = require('../../helpers/bcrypt');
 
