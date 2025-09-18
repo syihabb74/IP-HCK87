@@ -5,6 +5,7 @@ import { ethers } from 'ethers';
 import http from '../utils/http';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchWallet } from '../slices/walletSlice';
+import { successAlert, errorAlert } from '../utils/sweetAlert';
 
 const Settings = () => {
   const {loading, error, data} = useSelector(state => state.wallet);
@@ -97,10 +98,10 @@ const Settings = () => {
         console.log('🔥 MetaMask connection completed');
       } catch (error) {
         console.error('🔥 Error connecting to MetaMask:', error);
-        alert('Failed to connect to MetaMask. Please try again.');
+        await errorAlert('MetaMask Connection Failed', 'Failed to connect to MetaMask. Please make sure MetaMask is installed and unlocked.');
       }
     } else {
-      alert('MetaMask is not installed. Please install it to connect your wallet.');
+      await errorAlert('MetaMask Not Found', 'MetaMask is not installed. Please install MetaMask browser extension to connect your wallet.');
     }
   };
 
@@ -149,9 +150,15 @@ const Settings = () => {
       setShowAddWalletForm(false);
       setEditingWallet(null);
 
-      dispatch(fetchWallet())
+      dispatch(fetchWallet());
+
+      const successMessage = editingWallet ? 'Wallet updated successfully!' : 'Wallet added successfully!';
+      await successAlert('Success', successMessage);
+
     } catch (error) {
       console.error('Error with wallet operation:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to save wallet. Please try again.';
+      await errorAlert('Wallet Operation Failed', errorMessage);
     }
   };
 
@@ -183,10 +190,12 @@ const Settings = () => {
         }
       });
 
-      dispatch(fetchWallet())
-      console.log('Wallet deleted:', wallet.address);
+      dispatch(fetchWallet());
+      await successAlert('Wallet Deleted', `Wallet "${wallet.walletName}" has been successfully removed.`);
     } catch (error) {
       console.error('Error deleting wallet:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to delete wallet. Please try again.';
+      await errorAlert('Delete Failed', errorMessage);
     }
   };
   
@@ -215,11 +224,6 @@ const Settings = () => {
           <div className={`bg-slate-800/90 backdrop-blur-xl border border-slate-700 rounded-2xl p-8 hover:bg-slate-800/95 hover:border-slate-600 transition-all duration-500 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`} style={{transitionDelay: '200ms'}}>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-semibold text-white">Profile Information</h2>
-              <button
-                className="bg-gradient-to-r from-cyan-400 to-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:from-cyan-500 hover:to-blue-700 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg hover:shadow-cyan-400/30"
-              >
-                Edit Profile
-              </button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -325,7 +329,6 @@ const Settings = () => {
                       onChange={handleWalletFormChange}
                       placeholder="0x..."
                       className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all duration-300"
-                      required
                     />
                   </div>
 
@@ -340,7 +343,6 @@ const Settings = () => {
                       onChange={handleWalletFormChange}
                       placeholder="e.g., My Personal Wallet"
                       className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all duration-300"
-                      required
                     />
                   </div>
 

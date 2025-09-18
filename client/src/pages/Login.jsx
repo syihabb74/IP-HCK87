@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar';
 import Logo from '../components/Logo';
 import http from '../utils/http';
 import { useNavigate } from 'react-router';
+import { successAlert, errorAlert } from '../utils/sweetAlert';
 
 const Login = () => {
   const navigate = useNavigate()
@@ -21,17 +22,14 @@ const Login = () => {
           googleToken: response.credential
         }
       })
-      console.log(data, "<<<");
-      // simpan token ke dalam localStorage browser
-      // supaya di next request bisa bawa tokennya
       localStorage.setItem("access_token", data.access_token)
-
-      // pindah ke halaman home
-      // setPage("Home")
+      await successAlert('Login Successful!', 'Welcome back! You have been logged in successfully.');
       navigate("/dashboard")
 
     } catch (error) {
       console.log(error);
+      const errorMessage = error.response?.data?.message || 'Google sign-in failed. Please try again.';
+      await errorAlert('Login Failed', errorMessage);
     }
   }
 
@@ -71,11 +69,13 @@ const Login = () => {
       })
 
       localStorage.setItem('access_token', response.data.access_token);
+      await successAlert('Login Successful!', 'Welcome back! You have been logged in successfully.');
       navigate('/dashboard');
 
     } catch (error) {
-      
       console.error(error);
+      const errorMessage = error.response?.data?.message || 'Login failed. Please check your credentials.';
+      await errorAlert('Login Failed', errorMessage);
 
     }
 
@@ -130,7 +130,6 @@ const Login = () => {
               onChange={handleChange}
               placeholder="Enter your email"
               className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all duration-300"
-              required
             />
           </div>
 
@@ -146,7 +145,6 @@ const Login = () => {
                 onChange={handleChange}
                 placeholder="Enter your password"
                 className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all duration-300 pr-12"
-                required
               />
             </div>
           </div>

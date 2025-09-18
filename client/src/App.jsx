@@ -10,6 +10,7 @@ import Settings from './pages/Settings'
 import Portofolio from './pages/Portofolio'
 import store from './store/store'
 import { Provider } from 'react-redux'
+import AuthLayout from './layouts/AuthLayout'
 
 function App() {
 
@@ -17,13 +18,15 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path='/' element={<Home />} />
-        <Route path='/dashboard' element={<Dashboard />} />
         <Route path='/login' element={<Login />} />
         <Route path='/register' element={<Register />} />
-        <Route path='/ai-assistant' element={< AiAssistant />} />
-        <Route path='/markets' element={<Markets />} />
-        <Route path='/settings' element={<Settings />} />
-        <Route path='/portofolio' element={<Portofolio />} />
+        <Route path='' element={<AuthLayout />}>
+          <Route path='/dashboard' element={<Dashboard />} />
+          <Route path='/ai-assistant' element={< AiAssistant />} />
+          <Route path='/markets' element={<Markets />} />
+          <Route path='/settings' element={<Settings />} />
+          <Route path='/portofolio' element={<Portofolio />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   </Provider>

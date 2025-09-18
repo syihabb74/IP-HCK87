@@ -3,7 +3,8 @@ import Navbar from '../components/Navbar';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchMarkets } from '../slices/marketSlice';
 import http from '../utils/http';
-import Markdown from 'react-markdown'
+import Markdown from 'react-markdown';
+import { errorAlert } from '../utils/sweetAlert';
 
 const AiAssistant = () => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -61,6 +62,8 @@ const AiAssistant = () => {
 
     } catch (error) {
       console.error('AI Assistant Error:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to process your request. Please try again.';
+      await errorAlert('AI Assistant Error', errorMessage);
 
       // Add error message to conversation
       setConversation(prev => [...prev, {

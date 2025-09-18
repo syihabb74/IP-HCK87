@@ -4,6 +4,7 @@ import Logo from '../components/Logo';
 import { ethers } from 'ethers';
 import { useNavigate } from 'react-router';
 import http from '../utils/http';
+import { successAlert, errorAlert } from '../utils/sweetAlert';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -37,12 +38,13 @@ const Register = () => {
         data: form
       })
 
+      await successAlert('Registration Successful!', 'Your account has been created successfully. Please login to continue.');
       navigate('/login');
-      
-      
+
     } catch (error) {
-      
       console.error(error);
+      const errorMessage = error.response?.data?.message || 'Registration failed. Please try again.';
+      await errorAlert('Registration Failed', errorMessage);
 
     }
 
@@ -97,7 +99,6 @@ const Register = () => {
                 onChange={handleChange}
                 placeholder="Enter your full name"
                 className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all duration-300"
-                required
               />
             </div>
 
@@ -112,7 +113,6 @@ const Register = () => {
                 onChange={handleChange}
                 placeholder="Enter your email"
                 className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all duration-300"
-                required
               />
             </div>
 
@@ -128,8 +128,7 @@ const Register = () => {
                   onChange={handleChange}
                   placeholder="Create a strong password"
                   className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all duration-300 pr-12"
-                  required
-                />
+                  />
               </div>
             </div>
 

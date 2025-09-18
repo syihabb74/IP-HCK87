@@ -7,7 +7,8 @@ const marketSlice = createSlice({
     initialState: {
         data: [],
         loading: false,
-        error: ''
+        error: '',
+        lastUpdatedAt : new Date()
     }
     ,
     reducers: {},
@@ -32,6 +33,12 @@ export const marketReducer = marketSlice.reducer
 
 export const fetchMarkets = createAsyncThunk('market/fetchMarkets', async function fetchMarkets(params, thunkAPI) {
     try {
+
+        if (thunkAPI.getState().market.data.length > 0 && (new Date() - new Date(thunkAPI.getState().market.lastUpdatedAt) < 5 * 60 * 1000)) {
+
+            return thunkAPI.getState().market.data
+
+        }
 
         const {data} = await http({
             method: 'GET',

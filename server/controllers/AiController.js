@@ -4,7 +4,6 @@ class AiController {
     
     static async aiAnalyzeTopMarkets (req,res,next) {
         const ai = new GoogleGenAI({});
-        // console.log(req.body, 'ini reqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq')
 
         if (!req.body) return next({name : 'BadRequest', message : `Prompt can't be empty`});
 
@@ -42,6 +41,8 @@ Create a proper markdown table for the cryptocurrency data.`
             res.status(200).json({message : response.text})
 
         } catch (error) {
+
+            next(error)
             
             console.log(error)
 
@@ -49,19 +50,6 @@ Create a proper markdown table for the cryptocurrency data.`
 
     }
 
-    static async Portofolio (req,res,next) {
-
-        try {
-            
-
-
-        } catch (error) {
-            
-
-
-        }
-
-    }
 
 }
 

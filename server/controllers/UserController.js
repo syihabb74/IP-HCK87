@@ -82,30 +82,7 @@ class UserController {
             next(err);
         }
     }
-    
 
-    static async updateProfileUser (req,res,next) {
-
-        if (!req.body) return next({name: 'BadRequest', message : 'Invalid input'})
-
-        try {
-
-            const {username,email,fullName} = req.body;
-            const user = await User.findOne({where : {email}});
-            await user.update({email, fullName});
-            const profile = await Profile.findOne({where : {
-                UserId : req.user.id
-            }});
-            await profile.update({username})
-            res.status(200).json({user,profile})
-
-        } catch (error) {
-            
-            next(error)
-
-        }
-
-    }
 
 }
 
