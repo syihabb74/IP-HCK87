@@ -4,7 +4,6 @@ import Navbar from '../components/Navbar';
 import Logo from '../components/Logo';
 import FeatureIcon from '../components/FeatureIcon';
 import BrandIcon from '../components/BrandIcon';
-import { Navigate } from 'react-router';
 
 
 const Home = () => {
@@ -47,13 +46,13 @@ const Home = () => {
 
             <div className={`flex flex-col sm:flex-row gap-6 justify-center items-center transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`} style={{transitionDelay: '600ms'}}>
               <Link
-                to="/register"
+                to={"/register"}
                 className="bg-gradient-to-r from-cyan-400 to-blue-600 text-white px-12 py-4 rounded-lg text-xl font-semibold hover:from-cyan-500 hover:to-blue-700 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl hover:shadow-cyan-400/30 hover:scale-105"
               >
                 Get Started Free
               </Link>
               <Link
-                to="/login"
+                to={"/login"}
                 className="border-2 border-cyan-400 text-cyan-400 px-12 py-4 rounded-lg text-xl font-semibold hover:bg-cyan-400 hover:text-slate-900 transition-all duration-300 transform hover:-translate-y-2 hover:scale-105"
               >
                 Sign In
@@ -182,10 +181,10 @@ const Home = () => {
             </div>
 
             <div className="flex flex-wrap gap-6 text-slate-400">
-              <a href="#" className="hover:text-cyan-400 transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-cyan-400 transition-colors">Terms of Service</a>
-              <a href="#" className="hover:text-cyan-400 transition-colors">Support</a>
-              <a href="#" className="hover:text-cyan-400 transition-colors">Contact</a>
+              <Link to="/privacy-policy" className="hover:text-cyan-400 transition-colors">Privacy Policy</Link>
+              <Link to="/terms-of-service" className="hover:text-cyan-400 transition-colors">Terms of Service</Link>
+              <Link to="/support" className="hover:text-cyan-400 transition-colors">Support</Link>
+              <Link to="/contact" className="hover:text-cyan-400 transition-colors">Contact</Link>
             </div>
           </div>
 
