@@ -72,9 +72,6 @@ class UserController {
                 }
             })
 
-            if (created === 201) {
-                await User.runHooks('afterCreate', user, {})
-            }
             res.status(created ? 201 : 200).json({
                 access_token: signToken({ id: user.id })
             })
