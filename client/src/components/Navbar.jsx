@@ -1,17 +1,32 @@
-import { Link, useLocation } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
+import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import Logo from './Logo';
 
 const Navbar = () => {
+  const navigate = useNavigate();
   const location = useLocation();
-  const isAuthenticated = location.pathname.startsWith('/dashboard') || location.pathname === '/ai-assistant' || location.pathname === '/markets' || location.pathname === '/settings';
+  const isAuthenticated = location.pathname.startsWith('/dashboard') || location.pathname === '/ai-assistant' || location.pathname === '/markets' || location.pathname === '/settings' || location.pathname === '/portofolio';
+
+  const { data: userData } = useSelector(state => state.wallet) || { data: { fullName: '', Profile: { username: '' } } };
+
+  const handleLogout = () => {
+    localStorage.removeItem('access_token');
+    navigate('/');
+  }
+
+  const getInitials = (name) => {
+    if (!name) return 'U';
+    return name.split(' ').map(word => word[0]).join('').toUpperCase().slice(0, 2);
+  };
 
   return (
     <nav className="w-full bg-slate-900/80 backdrop-blur-xl border-b border-slate-700/50 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
           {/* Logo */}
-          <Link to={isAuthenticated ? "/dashboard" : "/"} className="flex items-center gap-3">
-            <span className="text-2xl">🔥</span>
-            <span className="text-2xl font-bold text-cyan-400">DexTracker</span>
+          <Link to={isAuthenticated ? "/dashboard" : "/"} className="flex items-center gap-3 hover:opacity-80 transition-opacity duration-300">
+            <Logo variant="compact" size="small" />
           </Link>
 
           {/* Navigation Links */}
@@ -26,7 +41,7 @@ const Navbar = () => {
                       : 'text-slate-400 hover:text-cyan-400'
                   }`}
                 >
-                  Portfolio
+                  Dashboard
                 </Link>
                 <Link
                   to="/markets"
@@ -37,6 +52,16 @@ const Navbar = () => {
                   }`}
                 >
                   Markets
+                </Link>
+                <Link
+                  to="/portofolio"
+                  className={`font-medium transition-colors duration-300 ${
+                    location.pathname === '/portofolio'
+                      ? 'text-cyan-400'
+                      : 'text-slate-400 hover:text-cyan-400'
+                  }`}
+                >
+                  Portfolio
                 </Link>
                 <Link
                   to="/ai-assistant"
@@ -88,10 +113,10 @@ const Navbar = () => {
                 <div className="relative group">
                   <button className="flex items-center gap-3 bg-slate-800 hover:bg-slate-700 rounded-lg px-3 py-2 transition-all duration-300">
                     <div className="w-8 h-8 bg-gradient-to-r from-cyan-400 to-blue-600 rounded-full flex items-center justify-center">
-                      <span className="text-white font-semibold text-sm">JD</span>
+                      <span className="text-white font-semibold text-sm">{getInitials(userData.fullName)}</span>
                     </div>
                     <div className="text-left hidden sm:block">
-                      <div className="text-white text-sm font-medium">John Doe</div>
+                      <div className="text-white text-sm font-medium">{userData.fullName || userData.Profile?.username}</div>
                       <div className="text-slate-400 text-xs">Premium</div>
                     </div>
                     <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -110,7 +135,7 @@ const Navbar = () => {
                         Settings
                       </Link>
                       <hr className="border-slate-700 my-2" />
-                      <button className="flex items-center gap-3 px-3 py-2 text-slate-300 hover:text-red-400 hover:bg-slate-700 rounded-lg transition-colors w-full text-left">
+                      <button onClick={handleLogout} className="flex items-center gap-3 px-3 py-2 text-slate-300 hover:text-red-400 hover:bg-slate-700 rounded-lg transition-colors w-full text-left">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                         </svg>

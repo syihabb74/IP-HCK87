@@ -1,7 +1,17 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import Navbar from '../components/Navbar';
+import Logo from '../components/Logo';
+import FeatureIcon from '../components/FeatureIcon';
+import BrandIcon from '../components/BrandIcon';
 
 const Home = () => {
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    setIsLoaded(true);
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white overflow-x-hidden font-inter">
       <Navbar />
@@ -17,29 +27,28 @@ const Home = () => {
           </div>
 
           <div className="relative z-10">
-            <div className="flex items-center justify-center gap-4 mb-8">
-              <span className="text-6xl animate-pulse">🔥</span>
-              <h1 className="text-5xl md:text-7xl font-extrabold text-cyan-400">DexTracker</h1>
+            <div className={`flex items-center justify-center gap-4 mb-8 transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-20 scale-95'}`}>
+              <Logo variant="full" size="xl" />
             </div>
 
-            <h2 className="text-4xl md:text-6xl font-extrabold mb-8 bg-gradient-to-r from-white to-cyan-400 bg-clip-text text-transparent leading-tight">
+            <h2 className={`text-4xl md:text-6xl font-extrabold mb-8 bg-gradient-to-r from-white to-cyan-400 bg-clip-text text-transparent leading-tight transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`} style={{transitionDelay: '200ms'}}>
               Track Your Crypto Portfolio Like a Pro
             </h2>
 
-            <p className="text-xl md:text-2xl text-slate-400 mb-12 max-w-4xl mx-auto leading-relaxed">
+            <p className={`text-xl md:text-2xl text-slate-400 mb-12 max-w-4xl mx-auto leading-relaxed transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`} style={{transitionDelay: '400ms'}}>
               Monitor your cryptocurrency investments with real-time data, advanced analytics, and professional insights for informed trading decisions.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+            <div className={`flex flex-col sm:flex-row gap-6 justify-center items-center transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`} style={{transitionDelay: '600ms'}}>
               <Link
                 to="/register"
-                className="bg-gradient-to-r from-cyan-400 to-blue-600 text-white px-12 py-4 rounded-lg text-xl font-semibold hover:from-cyan-500 hover:to-blue-700 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl hover:shadow-cyan-400/30"
+                className="bg-gradient-to-r from-cyan-400 to-blue-600 text-white px-12 py-4 rounded-lg text-xl font-semibold hover:from-cyan-500 hover:to-blue-700 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl hover:shadow-cyan-400/30 hover:scale-105"
               >
                 Get Started Free
               </Link>
               <Link
                 to="/login"
-                className="border-2 border-cyan-400 text-cyan-400 px-12 py-4 rounded-lg text-xl font-semibold hover:bg-cyan-400 hover:text-slate-900 transition-all duration-300 transform hover:-translate-y-2"
+                className="border-2 border-cyan-400 text-cyan-400 px-12 py-4 rounded-lg text-xl font-semibold hover:bg-cyan-400 hover:text-slate-900 transition-all duration-300 transform hover:-translate-y-2 hover:scale-105"
               >
                 Sign In
               </Link>
@@ -51,9 +60,9 @@ const Home = () => {
       {/* Features Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
+          <div className={`text-center mb-16 transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`} style={{transitionDelay: '800ms'}}>
             <h3 className="text-4xl md:text-5xl font-extrabold mb-6 bg-gradient-to-r from-white to-cyan-400 bg-clip-text text-transparent">
-              Why Choose DexTracker?
+              Why Choose Portfolio Tracker?
             </h3>
             <p className="text-xl text-slate-400 max-w-3xl mx-auto">
               Everything you need to manage and grow your crypto portfolio in one powerful platform
@@ -63,8 +72,8 @@ const Home = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Feature 1 */}
             <div className="bg-slate-800/60 backdrop-blur-sm border border-cyan-400/10 rounded-2xl p-8 text-center hover:-translate-y-4 hover:border-cyan-400/30 hover:shadow-2xl hover:shadow-cyan-400/20 transition-all duration-300">
-              <div className="w-20 h-20 bg-gradient-to-r from-cyan-400 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-3xl">📊</span>
+              <div className="flex items-center justify-center mx-auto mb-6">
+                <FeatureIcon type="realtime" size={80} />
               </div>
               <h4 className="text-2xl font-bold text-white mb-4">Real-Time Tracking</h4>
               <p className="text-slate-400 leading-relaxed">
@@ -74,8 +83,8 @@ const Home = () => {
 
             {/* Feature 2 */}
             <div className="bg-slate-800/60 backdrop-blur-sm border border-cyan-400/10 rounded-2xl p-8 text-center hover:-translate-y-4 hover:border-cyan-400/30 hover:shadow-2xl hover:shadow-cyan-400/20 transition-all duration-300">
-              <div className="w-20 h-20 bg-gradient-to-r from-cyan-400 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-3xl">📈</span>
+              <div className="flex items-center justify-center mx-auto mb-6">
+                <FeatureIcon type="analytics" size={80} />
               </div>
               <h4 className="text-2xl font-bold text-white mb-4">Advanced Analytics</h4>
               <p className="text-slate-400 leading-relaxed">
@@ -85,8 +94,8 @@ const Home = () => {
 
             {/* Feature 3 */}
             <div className="bg-slate-800/60 backdrop-blur-sm border border-cyan-400/10 rounded-2xl p-8 text-center hover:-translate-y-4 hover:border-cyan-400/30 hover:shadow-2xl hover:shadow-cyan-400/20 transition-all duration-300">
-              <div className="w-20 h-20 bg-gradient-to-r from-cyan-400 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-3xl">🔒</span>
+              <div className="flex items-center justify-center mx-auto mb-6">
+                <FeatureIcon type="security" size={80} />
               </div>
               <h4 className="text-2xl font-bold text-white mb-4">Bank-Level Security</h4>
               <p className="text-slate-400 leading-relaxed">
@@ -109,26 +118,26 @@ const Home = () => {
       {/* Stats Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-800/30">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
+          <div className={`text-center mb-16 transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`} style={{transitionDelay: '1200ms'}}>
             <h3 className="text-4xl md:text-5xl font-extrabold mb-6 text-white">
               Trusted by Crypto Enthusiasts Worldwide
             </h3>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="text-center">
+            <div className={`text-center transition-all duration-1000 hover:-translate-y-4 hover:scale-105 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`} style={{transitionDelay: '1400ms'}}>
               <div className="text-5xl font-extrabold text-cyan-400 mb-2">50K+</div>
               <div className="text-slate-400 text-lg">Active Users</div>
             </div>
-            <div className="text-center">
+            <div className={`text-center transition-all duration-1000 hover:-translate-y-4 hover:scale-105 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`} style={{transitionDelay: '1600ms'}}>
               <div className="text-5xl font-extrabold text-cyan-400 mb-2">$2.5B+</div>
               <div className="text-slate-400 text-lg">Assets Tracked</div>
             </div>
-            <div className="text-center">
+            <div className={`text-center transition-all duration-1000 hover:-translate-y-4 hover:scale-105 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`} style={{transitionDelay: '1800ms'}}>
               <div className="text-5xl font-extrabold text-cyan-400 mb-2">150K+</div>
               <div className="text-slate-400 text-lg">Daily Trades</div>
             </div>
-            <div className="text-center">
+            <div className={`text-center transition-all duration-1000 hover:-translate-y-4 hover:scale-105 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`} style={{transitionDelay: '2000ms'}}>
               <div className="text-5xl font-extrabold text-cyan-400 mb-2">99.9%</div>
               <div className="text-slate-400 text-lg">Uptime</div>
             </div>
@@ -138,18 +147,18 @@ const Home = () => {
 
       {/* CTA Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center">
+        <div className={`max-w-4xl mx-auto text-center transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`} style={{transitionDelay: '2200ms'}}>
           <h3 className="text-4xl md:text-5xl font-extrabold mb-6 bg-gradient-to-r from-white to-cyan-400 bg-clip-text text-transparent">
             Ready to Take Control of Your Crypto Portfolio?
           </h3>
           <p className="text-xl text-slate-400 mb-12">
-            Join thousands of traders who trust DexTracker to manage their cryptocurrency investments
+            Join thousands of traders who trust Portfolio Tracker to manage their cryptocurrency investments
           </p>
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
             <Link
               to="/register"
-              className="bg-gradient-to-r from-cyan-400 to-blue-600 text-white px-12 py-4 rounded-lg text-xl font-semibold hover:from-cyan-500 hover:to-blue-700 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl hover:shadow-cyan-400/30"
+              className="bg-gradient-to-r from-cyan-400 to-blue-600 text-white px-12 py-4 rounded-lg text-xl font-semibold hover:from-cyan-500 hover:to-blue-700 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl hover:shadow-cyan-400/30 hover:scale-105"
             >
               Start Free
             </Link>
@@ -162,8 +171,8 @@ const Home = () => {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center gap-3 mb-4 md:mb-0">
-              <span className="text-2xl">🔥</span>
-              <span className="text-2xl font-bold text-cyan-400">DexTracker</span>
+              <BrandIcon size={32} animate={true} />
+              <span className="text-2xl font-bold text-cyan-400">Portfolio Tracker</span>
             </div>
 
             <div className="flex flex-wrap gap-6 text-slate-400">
@@ -175,7 +184,7 @@ const Home = () => {
           </div>
 
           <div className="border-t border-slate-700 mt-8 pt-8 text-center text-slate-400">
-            <p>&copy; 2024 DexTracker. All rights reserved.</p>
+            <p>&copy; 2024 Portfolio Tracker. All rights reserved.</p>
           </div>
         </div>
       </footer>

@@ -1,2 +1,12 @@
 @import "tailwindcss";
 
+/* Google Sign In Button Styling */
+#googleSignIn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#googleSignIn > div {
+  margin: 0 auto;
+}

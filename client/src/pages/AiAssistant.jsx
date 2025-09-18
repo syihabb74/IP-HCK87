@@ -1,61 +1,97 @@
-import { useState } from 'react';
-import Navbar from '../components/Navbar';
+import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchMarkets } from '../slices/marketSlice';
+import http from '../utils/http';
+import Markdown from 'react-markdown';
+import { errorAlert } from '../utils/sweetAlert';
 
 const AiAssistant = () => {
-  const [messages, setMessages] = useState([
+  const [isLoaded, setIsLoaded] = useState(false);
+  const dispatch = useDispatch();
+  const [conversation, setConversation] = useState([
     {
-      id: 1,
       type: 'ai',
-      content: "Hello! I'm your crypto AI assistant. I can help you analyze the top 100 cryptocurrencies by market cap. Ask me anything about market trends, price analysis, or investment insights!",
-      timestamp: new Date().toLocaleTimeString()
+      message: "Hello! I'm your crypto AI assistant. I can help you analyze the top 100 cryptocurrencies by market cap. Ask me anything about market trends, price analysis, or investment insights!",
+      timestamp: new Date()
     }
   ]);
-  const [inputMessage, setInputMessage] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const { loading, error, data } = useSelector(state => state.market);
+  const [command, setcommand] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const handleChange = (e) => {
 
-  const handleSendMessage = (e) => {
-    e.preventDefault();
-    if (!inputMessage.trim()) return;
+    const {value } = e.target;
+    setcommand(value);
 
-    // Add user message
-    const userMessage = {
-      id: messages.length + 1,
+  }
+
+  useEffect(() => {
+    setIsLoaded(true);
+  }, []);
+
+  const handleSendPromptUser = async () => {
+    if (!command.trim() || isProcessing) return;
+
+    const userMessage = command.trim();
+    setIsProcessing(true);
+
+    // Add user message to conversation
+    setConversation(prev => [...prev, {
       type: 'user',
-      content: inputMessage,
-      timestamp: new Date().toLocaleTimeString()
-    };
+      message: userMessage,
+      timestamp: new Date()
+    }]);
 
-    setMessages(prev => [...prev, userMessage]);
-    setInputMessage('');
-    setIsLoading(true);
+    try {
+      const response = await http({
+        url : '/ai-markets',
+        method : 'POST',
+        headers : {
+          Authorization : `Bearer ${localStorage.getItem('access_token')}`
+        },
+        data : `TOP MARKET 100 CRYPTO : ${JSON.stringify(data)}\n Prompting User : ${userMessage} \n Please make response relatable with user prompting and based with TOP 100 MARKET CRYPTO`
+      })
 
-    // Simulate AI response (you'll replace this with actual API call)
-    setTimeout(() => {
-      const aiResponse = {
-        id: messages.length + 2,
+      // Add AI response to conversation - now handling new response format
+      setConversation(prev => [...prev, {
         type: 'ai',
-        content: "I've received your question about crypto analysis. This is where the AI response will be displayed after processing your query with the top 100 token data.",
-        timestamp: new Date().toLocaleTimeString()
-      };
-      setMessages(prev => [...prev, aiResponse]);
-      setIsLoading(false);
-    }, 2000);
+        message: response.data.message || response.data, // Handle both new and legacy format
+        data: response.data.data || null, // Store structured data if available
+        timestamp: new Date()
+      }]);
+
+    } catch (error) {
+      console.error('AI Assistant Error:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to process your request. Please try again.';
+      await errorAlert('AI Assistant Error', errorMessage);
+
+      // Add error message to conversation
+      setConversation(prev => [...prev, {
+        type: 'ai',
+        message: 'Sorry, I encountered an error processing your request. Please try again.',
+        timestamp: new Date()
+      }]);
+    } finally {
+      setIsProcessing(false);
+    }
+  }
+
+  // Handle Enter key press for sending message
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (!isProcessing && command.trim() && data.length > 0) {
+        handleSendPromptUser();
+        setcommand('');
+      }
+    }
   };
 
-  const suggestedPrompts = [
-    "What are the top 5 performing cryptocurrencies today?",
-    "Analyze Bitcoin's price trend over the past week",
-    "Which altcoins have the highest market cap growth?",
-    "Compare Ethereum vs Solana fundamentals",
-    "Show me the most volatile tokens in the top 100"
-  ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white overflow-hidden font-inter">
-      <Navbar />
-
+    <>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8 text-center">
+        <div className={`mb-8 text-center transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <h1 className="text-3xl md:text-4xl font-extrabold mb-4 bg-gradient-to-r from-white to-cyan-400 bg-clip-text text-transparent">
             AI Crypto Assistant
           </h1>
@@ -65,51 +101,160 @@ const AiAssistant = () => {
         </div>
 
         <div className="max-w-4xl mx-auto">
-          {/* Chat Section */}
           <div>
-            <div className="bg-slate-800/90 backdrop-blur-xl border border-slate-700 rounded-2xl h-[600px] flex flex-col">
+            <div className={`bg-slate-800/90 backdrop-blur-xl border border-slate-700 rounded-2xl h-[600px] flex flex-col hover:bg-slate-800/95 hover:border-slate-600 transition-all duration-500 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`} style={{ transitionDelay: '200ms' }}>
               {/* Chat Messages */}
               <div className="flex-1 p-6 overflow-y-auto space-y-4">
-                {messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
-                  >
+                {conversation.map((message, index) => (
+                  <div key={index} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
                     <div className={`max-w-[80%] rounded-2xl p-4 ${
                       message.type === 'user'
                         ? 'bg-gradient-to-r from-cyan-400 to-blue-600 text-white'
                         : 'bg-slate-700/50 text-slate-100'
                     }`}>
-                      <div className="flex items-start gap-3">
-                        {message.type === 'ai' && (
+                      {message.type === 'ai' ? (
+                        <div className="flex items-start gap-3">
                           <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center flex-shrink-0">
                             <span className="text-sm">🤖</span>
                           </div>
-                        )}
-                        <div className="flex-1">
-                          <p className="text-sm md:text-base leading-relaxed">{message.content}</p>
-                          <p className={`text-xs mt-2 ${
-                            message.type === 'user' ? 'text-cyan-100' : 'text-slate-400'
-                          }`}>
-                            {message.timestamp}
-                          </p>
+                          <div className="flex-1 markdown-content">
+                            <Markdown
+                              components={{
+                                table: ({ children }) => (
+                                  <div className="overflow-x-auto my-4">
+                                    <table className="w-full border-collapse border border-slate-500 bg-slate-800/50 rounded-lg">
+                                      {children}
+                                    </table>
+                                  </div>
+                                ),
+                                thead: ({ children }) => (
+                                  <thead className="bg-slate-700">{children}</thead>
+                                ),
+                                tbody: ({ children }) => (
+                                  <tbody>{children}</tbody>
+                                ),
+                                tr: ({ children }) => (
+                                  <tr className="border-b border-slate-600 hover:bg-slate-700/30">
+                                    {children}
+                                  </tr>
+                                ),
+                                th: ({ children }) => (
+                                  <th className="border border-slate-500 px-3 py-2 text-left font-semibold text-white bg-slate-700">
+                                    {children}
+                                  </th>
+                                ),
+                                td: ({ children }) => (
+                                  <td className="border border-slate-500 px-3 py-2 text-slate-100">
+                                    {children}
+                                  </td>
+                                ),
+                                code: ({ children, inline }) =>
+                                  inline ? (
+                                    <code className="bg-slate-800 px-2 py-1 rounded text-cyan-300 text-sm font-mono">
+                                      {children}
+                                    </code>
+                                  ) : (
+                                    <pre className="bg-slate-800 p-4 rounded-lg overflow-x-auto my-3">
+                                      <code className="text-cyan-300 font-mono text-sm">{children}</code>
+                                    </pre>
+                                  ),
+                                blockquote: ({ children }) => (
+                                  <blockquote className="border-l-4 border-cyan-400 pl-4 py-2 italic text-slate-300 bg-slate-800/30 rounded-r-lg my-3">
+                                    {children}
+                                  </blockquote>
+                                ),
+                                h1: ({ children }) => (
+                                  <h1 className="text-xl font-bold text-white mb-4 mt-6 first:mt-0">{children}</h1>
+                                ),
+                                h2: ({ children }) => (
+                                  <h2 className="text-lg font-semibold text-white mb-3 mt-5 first:mt-0 border-b border-slate-600 pb-1">{children}</h2>
+                                ),
+                                h3: ({ children }) => (
+                                  <h3 className="text-base font-medium text-white mb-2 mt-4 first:mt-0">{children}</h3>
+                                ),
+                                p: ({ children }) => (
+                                  <p className="text-slate-100 leading-relaxed mb-3 last:mb-0">{children}</p>
+                                ),
+                                ul: ({ children }) => (
+                                  <ul className="list-disc list-outside ml-5 text-slate-100 space-y-1 mb-3">{children}</ul>
+                                ),
+                                ol: ({ children }) => (
+                                  <ol className="list-decimal list-outside ml-5 text-slate-100 space-y-1 mb-3">{children}</ol>
+                                ),
+                                li: ({ children }) => (
+                                  <li className="text-slate-100 mb-1">{children}</li>
+                                ),
+                                strong: ({ children }) => (
+                                  <strong className="font-semibold text-white">{children}</strong>
+                                ),
+                                em: ({ children }) => (
+                                  <em className="italic text-slate-200">{children}</em>
+                                ),
+                                hr: () => (
+                                  <hr className="border-slate-600 my-4" />
+                                )
+                              }}
+                            >
+                              {message.message}
+                            </Markdown>
+                            {/* Display structured data if available */}
+                            {message.data && Array.isArray(message.data) && (
+                              <div className="mt-4 p-4 bg-slate-800/50 border border-slate-600 rounded-lg">
+                                <h4 className="text-sm font-semibold text-cyan-400 mb-3">📊 Structured Data</h4>
+                                <div className="overflow-x-auto">
+                                  <table className="w-full text-xs border-collapse border border-slate-500">
+                                    <thead className="bg-slate-700">
+                                      <tr>
+                                        {message.data[0] && Object.keys(message.data[0]).map(key => (
+                                          <th key={key} className="border border-slate-500 px-2 py-1 text-left text-white font-medium">
+                                            {key}
+                                          </th>
+                                        ))}
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {message.data.map((item, idx) => (
+                                        <tr key={idx} className="border-b border-slate-600 hover:bg-slate-700/30">
+                                          {Object.values(item).map((value, valueIdx) => (
+                                            <td key={valueIdx} className="border border-slate-500 px-2 py-1 text-slate-100">
+                                              {typeof value === 'number' ? value.toLocaleString() : value}
+                                            </td>
+                                          ))}
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                            )}
+                          </div>
                         </div>
-                      </div>
+                      ) : (
+                        <div className="flex items-start gap-3">
+                          <div className="w-8 h-8 bg-gradient-to-r from-cyan-400 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                            <span className="text-sm">👤</span>
+                          </div>
+                          <p className="text-sm md:text-base leading-relaxed flex-1">{message.message}</p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
 
-                {isLoading && (
+                {isProcessing && (
                   <div className="flex justify-start">
-                    <div className="bg-slate-700/50 rounded-2xl p-4 max-w-[80%]">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                    <div className="bg-slate-700/50 text-slate-100 max-w-[80%] rounded-2xl p-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center flex-shrink-0">
                           <span className="text-sm">🤖</span>
                         </div>
-                        <div className="flex space-x-1">
-                          <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce"></div>
-                          <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce delay-100"></div>
-                          <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce delay-200"></div>
+                        <div className="flex items-center gap-2">
+                          <div className="flex space-x-1">
+                            <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce"></div>
+                            <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                            <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                          </div>
+                          <span className="text-sm text-slate-400">AI is thinking...</span>
                         </div>
                       </div>
                     </div>
@@ -117,39 +262,41 @@ const AiAssistant = () => {
                 )}
               </div>
 
-              {/* Input Section */}
               <div className="border-t border-slate-700 p-6">
-                <form onSubmit={handleSendMessage} className="flex gap-4">
+                <div className="flex gap-4">
                   <input
+                    onChange={handleChange}
+                    onKeyPress={handleKeyPress}
+                    disabled={data.length === 0 || isProcessing}
                     type="text"
-                    value={inputMessage}
-                    onChange={(e) => setInputMessage(e.target.value)}
-                    placeholder="Ask me anything about crypto markets..."
-                    className="flex-1 bg-slate-700/50 border border-slate-600 rounded-xl px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all duration-300"
-                    disabled={isLoading}
+                    value={command}
+                    placeholder={data.length === 0 ? "Loading market data..." : "Ask me anything about crypto markets..."}
+                    className="flex-1 bg-slate-700/50 border border-slate-600 rounded-xl px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all duration-300 disabled:opacity-50"
                   />
                   <button
-                    type="submit"
-                    disabled={isLoading || !inputMessage.trim()}
-                    className="bg-gradient-to-r from-cyan-400 to-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-cyan-500 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg hover:shadow-cyan-400/30"
+                    onClick={() => {
+                      handleSendPromptUser();
+                      setcommand('');
+                    }}
+                    disabled={isProcessing || !command.trim() || data.length === 0}
+                    type="button"
+                    className="bg-gradient-to-r from-cyan-400 to-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-cyan-500 hover:to-blue-700 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg hover:shadow-cyan-400/30 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none"
                   >
-                    {isLoading ? (
-                      <svg className="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                      </svg>
+                    {isProcessing ? (
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                     ) : (
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                       </svg>
                     )}
                   </button>
-                </form>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

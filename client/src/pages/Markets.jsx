@@ -1,33 +1,119 @@
-import Navbar from '../components/Navbar';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router';
 import CoinCard from '../components/CoinCard';
+import TokenCard from '../components/TokenCard';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchMarkets } from '../slices/marketSlice';
 
 const Markets = () => {
-  // Sample market data - you can replace this with real API data
-  const marketData = [
-    { rank: 1, name: "Bitcoin", symbol: "BTC", price: "$69,420.50", change24h: "+2.45%", volume: "$28.5B", marketCap: "$1.37T", icon: "₿", isPositive: true },
-    { rank: 2, name: "Ethereum", symbol: "ETH", price: "$3,845.30", change24h: "+1.85%", volume: "$15.2B", marketCap: "$462.8B", icon: "Ξ", isPositive: true },
-    { rank: 3, name: "BNB", symbol: "BNB", price: "$685.40", change24h: "-0.75%", volume: "$2.1B", marketCap: "$102.3B", icon: "⬡", isPositive: false },
-    { rank: 4, name: "Solana", symbol: "SOL", price: "$195.80", change24h: "+4.12%", volume: "$3.8B", marketCap: "$91.7B", icon: "◎", isPositive: true },
-    { rank: 5, name: "XRP", symbol: "XRP", price: "$0.6235", change24h: "+0.95%", volume: "$1.4B", marketCap: "$35.2B", icon: "◉", isPositive: true },
-    { rank: 6, name: "Cardano", symbol: "ADA", price: "$0.4850", change24h: "-1.25%", volume: "$585M", marketCap: "$17.1B", icon: "₳", isPositive: false },
-    { rank: 7, name: "Avalanche", symbol: "AVAX", price: "$42.15", change24h: "+3.60%", volume: "$845M", marketCap: "$16.8B", icon: "▲", isPositive: true },
-    { rank: 8, name: "Dogecoin", symbol: "DOGE", price: "$0.1245", change24h: "+1.40%", volume: "$1.2B", marketCap: "$18.3B", icon: "Ð", isPositive: true },
-    { rank: 9, name: "Polygon", symbol: "MATIC", price: "$0.8920", change24h: "-2.15%", volume: "$420M", marketCap: "$8.7B", icon: "⬟", isPositive: false },
-    { rank: 10, name: "Chainlink", symbol: "LINK", price: "$16.85", change24h: "+0.85%", volume: "$315M", marketCap: "$10.2B", icon: "⬢", isPositive: true }
-  ];
+  
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const itemsPerPage = 10;
+  const {loading, error, data} = useSelector(state => state.market);
+  const currentPage = parseInt(searchParams.get('page')) || 1;
+  const showAll = searchParams.get('showAll') === 'true';
+  
+ 
+  useEffect(() => {
+    setIsLoaded(true);
+
+  }, []);
+
+
+  const formatMarketData = (data) => {
+    return data.map((coin, index) => ({
+      rank: coin.market_cap_rank || index + 1,
+      name: coin.name,
+      symbol: coin.symbol?.toUpperCase(),
+      price: `$${coin.current_price?.toLocaleString()}`,
+      change24h: `${coin.price_change_percentage_24h >= 0 ? '+' : ''}${coin.price_change_percentage_24h?.toFixed(2)}%`,
+      volume: `$${(coin.total_volume / 1000000).toFixed(1)}M`,
+      marketCap: `$${(coin.market_cap / 1000000000).toFixed(1)}B`,
+      icon: coin.symbol?.charAt(0).toUpperCase(),
+      isPositive: coin.price_change_percentage_24h >= 0,
+      image: coin.image
+    }));
+  };
+
+  const getPaginatedData = () => {
+    if (showAll) {
+      return formatMarketData(data);
+    }
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return formatMarketData(data.slice(startIndex, endIndex));
+  };
+
+  const totalPages = Math.ceil(data.length / itemsPerPage);
+
+  const handlePageChange = (page) => {
+    setSearchParams({ page: page.toString() });
+  };
+
+  const handleShowAll = () => {
+    setSearchParams({ showAll: 'true' });
+  };
+
+  const handleShowPagination = () => {
+    setSearchParams({ page: '1' });
+  };
+
+  const marketData = getPaginatedData();
+
+  const calculateMarketStats = () => {
+    if (!data || data.length === 0) {
+      return {
+        totalMarketCap: 0,
+        totalVolume: 0,
+        btcDominance: 0,
+        marketCapChange: 0,
+        volumeChange: 0,
+        btcDominanceChange: 0
+      };
+    }
+
+    const totalMarketCap = data.reduce((sum, coin) => sum + (coin.market_cap || 0), 0);
+
+    const totalVolume = data.reduce((sum, coin) => sum + (coin.total_volume || 0), 0);
+
+    const btcData = data.find(coin => coin.symbol?.toLowerCase() === 'btc');
+    const btcMarketCap = btcData?.market_cap || 0;
+    const btcDominance = totalMarketCap > 0 ? (btcMarketCap / totalMarketCap) * 100 : 0;
+
+    const marketCapChange = data.reduce((sum, coin, index) => {
+      const weight = (coin.market_cap || 0) / totalMarketCap;
+      return sum + (weight * (coin.price_change_percentage_24h || 0));
+    }, 0);
+
+    const volumeChange = data.reduce((sum, coin) => {
+      const weight = (coin.total_volume || 0) / totalVolume;
+      return sum + (weight * (coin.price_change_percentage_24h || 0));
+    }, 0);
+
+    const btcDominanceChange = btcData?.price_change_percentage_24h || 0;
+
+    return {
+      totalMarketCap,
+      totalVolume,
+      btcDominance,
+      marketCapChange,
+      volumeChange,
+      btcDominanceChange
+    };
+  };
+
+  const marketStats = calculateMarketStats();
 
   const handleTrade = (coinData) => {
-    console.log('Trading:', coinData);
-    // Here you can implement trade functionality
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white overflow-x-hidden font-inter">
-      <Navbar />
-
+    <>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="mb-8">
+        <div className={`mb-8 transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <h1 className="text-3xl md:text-4xl font-extrabold mb-4 bg-gradient-to-r from-white to-cyan-400 bg-clip-text text-transparent">
             Crypto Markets
           </h1>
@@ -38,22 +124,34 @@ const Markets = () => {
 
         {/* Market Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-slate-800/80 backdrop-blur-xl border border-slate-700 rounded-2xl p-6">
-            <h3 className="text-slate-400 text-sm font-medium mb-2">Total Market Cap</h3>
-            <p className="text-2xl font-bold text-white">$2.85T</p>
-            <p className="text-green-400 text-sm">+2.15% (24h)</p>
+          <div className={`bg-slate-800/80 backdrop-blur-xl border border-slate-700 rounded-2xl p-6 hover:bg-slate-800/90 hover:border-slate-600 hover:-translate-y-2 hover:shadow-2xl hover:shadow-cyan-400/20 transition-all duration-500 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`} style={{transitionDelay: '200ms'}}>
+            <h3 className="text-slate-400 text-sm font-medium mb-2">Total Market Cap Top 100</h3>
+            <p className="text-2xl font-bold text-white">
+              ${(marketStats.totalMarketCap / 1000000000000).toFixed(2)}T
+            </p>
+            <p className={`${marketStats.marketCapChange >= 0 ? 'text-green-400' : 'text-red-400'} text-sm`}>
+              {marketStats.marketCapChange >= 0 ? '+' : ''}{marketStats.marketCapChange.toFixed(2)}% (24h)
+            </p>
           </div>
-          <div className="bg-slate-800/80 backdrop-blur-xl border border-slate-700 rounded-2xl p-6">
+          <div className={`bg-slate-800/80 backdrop-blur-xl border border-slate-700 rounded-2xl p-6 hover:bg-slate-800/90 hover:border-slate-600 hover:-translate-y-2 hover:shadow-2xl hover:shadow-cyan-400/20 transition-all duration-500 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`} style={{transitionDelay: '400ms'}}>
             <h3 className="text-slate-400 text-sm font-medium mb-2">24h Volume</h3>
-            <p className="text-2xl font-bold text-white">$95.2B</p>
-            <p className="text-green-400 text-sm">+8.45% (24h)</p>
+            <p className="text-2xl font-bold text-white">
+              ${(marketStats.totalVolume / 1000000000).toFixed(1)}B
+            </p>
+            <p className={`${marketStats.volumeChange >= 0 ? 'text-green-400' : 'text-red-400'} text-sm`}>
+              {marketStats.volumeChange >= 0 ? '+' : ''}{marketStats.volumeChange.toFixed(2)}% (24h)
+            </p>
           </div>
-          <div className="bg-slate-800/80 backdrop-blur-xl border border-slate-700 rounded-2xl p-6">
+          <div className={`bg-slate-800/80 backdrop-blur-xl border border-slate-700 rounded-2xl p-6 hover:bg-slate-800/90 hover:border-slate-600 hover:-translate-y-2 hover:shadow-2xl hover:shadow-cyan-400/20 transition-all duration-500 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`} style={{transitionDelay: '600ms'}}>
             <h3 className="text-slate-400 text-sm font-medium mb-2">BTC Dominance</h3>
-            <p className="text-2xl font-bold text-white">48.2%</p>
-            <p className="text-red-400 text-sm">-0.85% (24h)</p>
+            <p className="text-2xl font-bold text-white">
+              {marketStats.btcDominance.toFixed(1)}%
+            </p>
+            <p className={`${marketStats.btcDominanceChange >= 0 ? 'text-green-400' : 'text-red-400'} text-sm`}>
+              {marketStats.btcDominanceChange >= 0 ? '+' : ''}{marketStats.btcDominanceChange.toFixed(2)}% (24h)
+            </p>
           </div>
-          <div className="bg-slate-800/80 backdrop-blur-xl border border-slate-700 rounded-2xl p-6">
+          <div className={`bg-slate-800/80 backdrop-blur-xl border border-slate-700 rounded-2xl p-6 hover:bg-slate-800/90 hover:border-slate-600 hover:-translate-y-2 hover:shadow-2xl hover:shadow-cyan-400/20 transition-all duration-500 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`} style={{transitionDelay: '800ms'}}>
             <h3 className="text-slate-400 text-sm font-medium mb-2">Fear & Greed</h3>
             <p className="text-2xl font-bold text-yellow-400">72</p>
             <p className="text-slate-400 text-sm">Greed</p>
@@ -61,9 +159,22 @@ const Markets = () => {
         </div>
 
         {/* Markets Table */}
-        <div className="bg-slate-800/90 backdrop-blur-xl border border-slate-700 rounded-2xl overflow-hidden">
-          <div className="px-6 py-4 border-b border-slate-700">
+        <div className={`bg-slate-800/90 backdrop-blur-xl border border-slate-700 rounded-2xl overflow-hidden hover:bg-slate-800/95 hover:border-slate-600 transition-all duration-500 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`} style={{transitionDelay: '1000ms'}}>
+          <div className="px-6 py-4 border-b border-slate-700 flex justify-between items-center">
             <h2 className="text-xl font-semibold text-white">Top Cryptocurrencies by Market Cap</h2>
+            <div className="flex items-center gap-4">
+              <span className="text-slate-400 text-sm">
+                {showAll ? `Showing all ${data.length}` : `Page ${currentPage} of ${totalPages}`}
+              </span>
+              {!showAll && (
+                <button
+                  onClick={handleShowAll}
+                  className="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1 rounded-lg text-sm transition-all duration-300"
+                >
+                  Show All
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="overflow-x-auto">
@@ -91,6 +202,7 @@ const Markets = () => {
                     volume={coin.volume}
                     marketCap={coin.marketCap}
                     icon={coin.icon}
+                    image={coin.image}
                     isPositive={coin.isPositive}
                     onTrade={handleTrade}
                   />
@@ -98,11 +210,60 @@ const Markets = () => {
               </tbody>
             </table>
           </div>
+
+          {/* Pagination Controls */}
+          {!showAll && totalPages > 1 && (
+            <div className="px-6 py-4 border-t border-slate-700 flex justify-center items-center gap-2">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="px-3 py-1 rounded-lg bg-slate-700 text-white hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+              >
+                Previous
+              </button>
+
+              {[...Array(totalPages)].map((_, index) => {
+                const page = index + 1;
+                return (
+                  <button
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                    className={`px-3 py-1 rounded-lg transition-all duration-300 ${
+                      currentPage === page
+                        ? 'bg-cyan-600 text-white'
+                        : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                );
+              })}
+
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1 rounded-lg bg-slate-700 text-white hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+              >
+                Next
+              </button>
+            </div>
+          )}
+
+          {showAll && (
+            <div className="px-6 py-4 border-t border-slate-700 flex justify-center">
+              <button
+                onClick={handleShowPagination}
+                className="bg-slate-600 hover:bg-slate-500 text-white px-4 py-2 rounded-lg transition-all duration-300"
+              >
+                Show Pagination
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Additional Market Info */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
-          <div className="bg-slate-800/90 backdrop-blur-xl border border-slate-700 rounded-2xl p-6">
+          <div className={`bg-slate-800/90 backdrop-blur-xl border border-slate-700 rounded-2xl p-6 hover:bg-slate-800/95 hover:border-slate-600 hover:-translate-y-2 hover:shadow-xl hover:shadow-cyan-400/10 transition-all duration-500 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`} style={{transitionDelay: '1200ms'}}>
             <h3 className="text-xl font-semibold text-white mb-4">Market Trends</h3>
             <div className="space-y-4">
               <div className="flex justify-between items-center">
@@ -124,7 +285,7 @@ const Markets = () => {
             </div>
           </div>
 
-          <div className="bg-slate-800/90 backdrop-blur-xl border border-slate-700 rounded-2xl p-6">
+          <div className={`bg-slate-800/90 backdrop-blur-xl border border-slate-700 rounded-2xl p-6 hover:bg-slate-800/95 hover:border-slate-600 hover:-translate-y-2 hover:shadow-xl hover:shadow-cyan-400/10 transition-all duration-500 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`} style={{transitionDelay: '1400ms'}}>
             <h3 className="text-xl font-semibold text-white mb-4">Market Analytics</h3>
             <div className="space-y-4">
               <div>
@@ -158,7 +319,7 @@ const Markets = () => {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
