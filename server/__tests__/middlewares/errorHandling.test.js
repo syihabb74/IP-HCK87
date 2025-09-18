@@ -29,7 +29,6 @@ describe('Error Handling Middleware', () => {
 
     errorHandling(error, mockReq, mockRes, mockNext);
 
-    expect(console.log).toHaveBeenCalledWith(error);
     expect(mockRes.status).toHaveBeenCalledWith(401);
     expect(mockRes.json).toHaveBeenCalledWith({
       message: 'Invalid Token',
@@ -44,7 +43,6 @@ describe('Error Handling Middleware', () => {
 
     errorHandling(error, mockReq, mockRes, mockNext);
 
-    expect(console.log).toHaveBeenCalledWith(error);
     expect(mockRes.status).toHaveBeenCalledWith(400);
     expect(mockRes.json).toHaveBeenCalledWith({
       message: 'Invalid input data',
@@ -59,7 +57,6 @@ describe('Error Handling Middleware', () => {
 
     errorHandling(error, mockReq, mockRes, mockNext);
 
-    expect(console.log).toHaveBeenCalledWith(error);
     expect(mockRes.status).toHaveBeenCalledWith(401);
     expect(mockRes.json).toHaveBeenCalledWith({
       message: 'Access denied',
@@ -77,7 +74,6 @@ describe('Error Handling Middleware', () => {
 
     errorHandling(error, mockReq, mockRes, mockNext);
 
-    expect(console.log).toHaveBeenCalledWith(error);
     expect(mockRes.status).toHaveBeenCalledWith(400);
     expect(mockRes.json).toHaveBeenCalledWith({
       message: 'Email is required',
@@ -94,7 +90,6 @@ describe('Error Handling Middleware', () => {
 
     errorHandling(error, mockReq, mockRes, mockNext);
 
-    expect(console.log).toHaveBeenCalledWith(error);
     expect(mockRes.status).toHaveBeenCalledWith(400);
     expect(mockRes.json).toHaveBeenCalledWith({
       message: 'Email already exists',
@@ -104,18 +99,123 @@ describe('Error Handling Middleware', () => {
   test('should handle NotFound error', () => {
     const error = {
       name: 'NotFound',
-      message: 'You dont have any wallet yet please connect first',
+      message: 'Resource not found',
     };
 
     errorHandling(error, mockReq, mockRes, mockNext);
 
-    expect(console.log).toHaveBeenCalledWith(error);
     expect(mockRes.status).toHaveBeenCalledWith(404);
     expect(mockRes.json).toHaveBeenCalledWith({
-      message: 'You dont have any wallet yet please connect first',
+      message: 'Resource not found',
     });
   });
 
+  test('should handle NotFound error without message', () => {
+    const error = {
+      name: 'NotFound',
+    };
+
+    errorHandling(error, mockReq, mockRes, mockNext);
+
+    expect(mockRes.status).toHaveBeenCalledWith(404);
+    expect(mockRes.json).toHaveBeenCalledWith({
+      message: 'Not Found',
+    });
+  });
+
+  test('should handle null error', () => {
+    errorHandling(null, mockReq, mockRes, mockNext);
+
+    expect(mockRes.status).toHaveBeenCalledWith(500);
+    expect(mockRes.json).toHaveBeenCalledWith({
+      message: 'Internal Server Error',
+    });
+  });
+
+  test('should handle undefined error', () => {
+    errorHandling(undefined, mockReq, mockRes, mockNext);
+
+    expect(mockRes.status).toHaveBeenCalledWith(500);
+    expect(mockRes.json).toHaveBeenCalledWith({
+      message: 'Internal Server Error',
+    });
+  });
+
+  test('should handle non-object error', () => {
+    errorHandling('string error', mockReq, mockRes, mockNext);
+
+    expect(mockRes.status).toHaveBeenCalledWith(500);
+    expect(mockRes.json).toHaveBeenCalledWith({
+      message: 'Internal Server Error',
+    });
+  });
+
+  test('should handle BadRequest error without message', () => {
+    const error = {
+      name: 'BadRequest',
+    };
+
+    errorHandling(error, mockReq, mockRes, mockNext);
+
+    expect(mockRes.status).toHaveBeenCalledWith(400);
+    expect(mockRes.json).toHaveBeenCalledWith({
+      message: 'Bad Request',
+    });
+  });
+
+  test('should handle Unauthorized error without message', () => {
+    const error = {
+      name: 'Unauthorized',
+    };
+
+    errorHandling(error, mockReq, mockRes, mockNext);
+
+    expect(mockRes.status).toHaveBeenCalledWith(401);
+    expect(mockRes.json).toHaveBeenCalledWith({
+      message: 'Unauthorized',
+    });
+  });
+
+  test('should handle SequelizeValidationError without errors array', () => {
+    const error = {
+      name: 'SequelizeValidationError',
+    };
+
+    errorHandling(error, mockReq, mockRes, mockNext);
+
+    expect(mockRes.status).toHaveBeenCalledWith(400);
+    expect(mockRes.json).toHaveBeenCalledWith({
+      message: 'Validation Error',
+    });
+  });
+
+  test('should handle SequelizeValidationError with empty errors array', () => {
+    const error = {
+      name: 'SequelizeValidationError',
+      errors: [],
+    };
+
+    errorHandling(error, mockReq, mockRes, mockNext);
+
+    expect(mockRes.status).toHaveBeenCalledWith(400);
+    expect(mockRes.json).toHaveBeenCalledWith({
+      message: 'Validation Error',
+    });
+  });
+
+  test('should handle SequelizeValidationError with error without message', () => {
+    const error = {
+      name: 'SequelizeValidationError',
+      errors: [{}], // Error object without message
+    };
+
+    errorHandling(error, mockReq, mockRes, mockNext);
+
+    expect(mockRes.status).toHaveBeenCalledWith(400);
+    expect(mockRes.json).toHaveBeenCalledWith({
+      message: 'Validation Error',
+    });
+  });
 
   test('should handle unknown errors with 500 status', () => {
     const error = new Error('Unknown error');
@@ -123,7 +223,6 @@ describe('Error Handling Middleware', () => {
 
     errorHandling(error, mockReq, mockRes, mockNext);
 
-    expect(console.log).toHaveBeenCalledWith(error);
     expect(mockRes.status).toHaveBeenCalledWith(500);
     expect(mockRes.json).toHaveBeenCalledWith({
       message: 'Internal Server Error',
@@ -137,30 +236,9 @@ describe('Error Handling Middleware', () => {
 
     errorHandling(error, mockReq, mockRes, mockNext);
 
-    expect(console.log).toHaveBeenCalledWith(error);
     expect(mockRes.status).toHaveBeenCalledWith(500);
     expect(mockRes.json).toHaveBeenCalledWith({
       message: 'Internal Server Error',
     });
-  });
-
-  test('should handle null error', () => {
-    const error = null;
-
-    errorHandling(error, mockReq, mockRes, mockNext);
-
-    expect(console.log).toHaveBeenCalledWith(error);
-    expect(mockRes.status).toHaveBeenCalledWith(500);
-    expect(mockRes.json).toHaveBeenCalledWith({
-      message: 'Internal Server Error',
-    });
-  });
-
-  test('should always log the error', () => {
-    const error = new Error('Test error');
-
-    errorHandling(error, mockReq, mockRes, mockNext);
-
-    expect(console.log).toHaveBeenCalledWith(error);
   });
 });

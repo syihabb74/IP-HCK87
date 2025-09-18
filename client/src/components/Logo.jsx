@@ -1,17 +1,18 @@
 import React from 'react';
 
 const Logo = ({ variant = 'full', size = 'medium', className = '' }) => {
-  const getLogoPath = () => {
-    switch (variant) {
-      case 'icon':
-        return '/src/assets/logos/DexTrackerIcon.svg';
-      case 'compact':
-        return '/src/assets/logos/DexTrackerCompact.svg';
-      case 'full':
-      default:
-        return '/src/assets/logos/DexTrackerLogo.svg';
-    }
-  };
+  // Note: SVG files are no longer used, keeping for reference:
+  // const getLogoPath = () => {
+  //   switch (variant) {
+  //     case 'icon':
+  //       return '/src/assets/logos/DexTrackerIcon.svg';
+  //     case 'compact':
+  //       return '/src/assets/logos/DexTrackerCompact.svg';
+  //     case 'full':
+  //     default:
+  //       return '/src/assets/logos/DexTrackerLogo.svg';
+  //   }
+  // };
 
   const getSizeClasses = () => {
     switch (size) {
@@ -79,7 +80,7 @@ const Logo = ({ variant = 'full', size = 'medium', className = '' }) => {
 
     if (variant === 'compact') {
       return (
-        <svg width="150" height="40" viewBox="0 0 150 40" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${getSizeClasses()} ${className}`}>
+        <svg width="220" height="40" viewBox="0 0 220 40" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${getSizeClasses()} ${className}`}>
           <defs>
             <linearGradient id="compactGradient" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" style={{stopColor:'#22D3EE', stopOpacity:1}} />
@@ -105,8 +106,8 @@ const Logo = ({ variant = 'full', size = 'medium', className = '' }) => {
           <rect x="28" y="26" width="1" height="1" fill="white" opacity="0.4"/>
           <rect x="30" y="26" width="1" height="1" fill="white" opacity="0.8"/>
           <rect x="32" y="26" width="1" height="1" fill="white" opacity="0.4"/>
-          <text x="45" y="28" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" fill="url(#compactTextGradient)">
-            DexTracker
+          <text x="45" y="28" fontFamily="Arial, sans-serif" fontSize="14" fontWeight="bold" fill="url(#compactTextGradient)">
+            Portfolio Tracker
           </text>
         </svg>
       );
@@ -114,7 +115,7 @@ const Logo = ({ variant = 'full', size = 'medium', className = '' }) => {
 
     // Full logo (default)
     return (
-      <svg width="200" height="60" viewBox="0 0 200 60" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${getSizeClasses()} ${className}`}>
+      <svg width="280" height="60" viewBox="0 0 280 60" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${getSizeClasses()} ${className}`}>
         <defs>
           <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" style={{stopColor:'#22D3EE', stopOpacity:1}} />
@@ -140,7 +141,7 @@ const Logo = ({ variant = 'full', size = 'medium', className = '' }) => {
         <rect x="38" y="21" width="2" height="2" fill="white" opacity="0.6"/>
         <rect x="41" y="21" width="2" height="2" fill="white" opacity="0.8"/>
         <text x="70" y="25" fontFamily="Arial, sans-serif" fontSize="20" fontWeight="bold" fill="url(#textGradient)">
-          DexTracker
+          Portfolio Tracker
         </text>
         <text x="70" y="40" fontFamily="Arial, sans-serif" fontSize="10" fill="#64748B">
           Crypto Portfolio Intelligence

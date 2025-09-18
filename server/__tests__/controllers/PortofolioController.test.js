@@ -35,10 +35,11 @@ describe('PortofolioController', () => {
         .query({ wallets: walletAddresses });
 
       expect(response.status).toBe(200);
-      expect(response.body).toHaveProperty('totalBalance');
-      expect(response.body).toHaveProperty('nativeAndToken');
-      expect(typeof response.body.totalBalance).toBe('number');
-      expect(Array.isArray(response.body.nativeAndToken)).toBe(true);
+      expect(response.body).toHaveProperty('data');
+      expect(response.body.data).toHaveProperty('totalBalance');
+      expect(response.body.data).toHaveProperty('nativeAndToken');
+      expect(typeof response.body.data.totalBalance).toBe('number');
+      expect(Array.isArray(response.body.data.nativeAndToken)).toBe(true);
 
       // Verify Moralis API calls
       expect(mockHttp.moralis).toHaveBeenCalledTimes(4); // 2 wallets * 2 calls each (net-worth + tokens)
@@ -68,22 +69,24 @@ describe('PortofolioController', () => {
         .query({ wallets: walletAddress });
 
       expect(response.status).toBe(200);
-      expect(response.body).toHaveProperty('totalBalance');
-      expect(response.body).toHaveProperty('nativeAndToken');
+      expect(response.body).toHaveProperty('data');
+      expect(response.body.data).toHaveProperty('totalBalance');
+      expect(response.body.data).toHaveProperty('nativeAndToken');
 
       // Verify Moralis API calls for single wallet
       expect(mockHttp.moralis).toHaveBeenCalledTimes(2); // 1 wallet * 2 calls (net-worth + tokens)
     });
 
-    test('should handle Moralis API errors', async () => {
+    test('should handle Moralis API errors gracefully', async () => {
       mockHttp.moralis.mockRejectedValueOnce(new Error('Moralis API Error'));
 
       const response = await request(app)
         .get('/portofolios')
         .query({ wallets: '0x1234567890abcdef1234567890abcdef12345678' });
 
-      expect(response.status).toBe(500);
-      expect(response.body.message).toBe('Internal Server Error');
+      expect(response.status).toBe(200);
+      expect(response.body.data.totalBalance).toBe(0); // Should be 0 due to error handling
+      expect(response.body.data.nativeAndToken).toEqual([[]]); // Empty array due to error
     });
 
     test('should handle invalid wallet addresses', async () => {
@@ -95,6 +98,63 @@ describe('PortofolioController', () => {
 
       expect(response.status).toBe(200); // Controller doesn't validate address format
       expect(mockHttp.moralis).toHaveBeenCalled();
+    });
+
+    test('should handle response with undefined total_networth_usd', async () => {
+      mockHttp.moralis
+        .mockResolvedValueOnce({
+          data: {} // Missing total_networth_usd
+        })
+        .mockResolvedValueOnce({
+          data: {
+            result: [{ symbol: 'ETH', balance: '1.0' }]
+          }
+        });
+
+      const response = await request(app)
+        .get('/portofolios')
+        .query({ wallets: '0x1234567890abcdef1234567890abcdef12345678' });
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.totalBalance).toBe(0); // Should default to 0
+    });
+
+    test('should handle response with null data', async () => {
+      mockHttp.moralis
+        .mockResolvedValueOnce({
+          data: null // Null data
+        })
+        .mockResolvedValueOnce({
+          data: null
+        });
+
+      const response = await request(app)
+        .get('/portofolios')
+        .query({ wallets: '0x1234567890abcdef1234567890abcdef12345678' });
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.totalBalance).toBe(0);
+      expect(response.body.data.nativeAndToken).toEqual([[]]);
+    });
+
+    test('should handle response with missing result in tokens', async () => {
+      mockHttp.moralis
+        .mockResolvedValueOnce({
+          data: {
+            total_networth_usd: "1500.75"
+          }
+        })
+        .mockResolvedValueOnce({
+          data: {} // Missing result
+        });
+
+      const response = await request(app)
+        .get('/portofolios')
+        .query({ wallets: '0x1234567890abcdef1234567890abcdef12345678' });
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.totalBalance).toBe(1500.75);
+      expect(response.body.data.nativeAndToken).toEqual([[]]);
     });
 
     test('should process multiple wallets correctly', async () => {
@@ -114,12 +174,12 @@ describe('PortofolioController', () => {
         .query({ wallets: walletAddresses });
 
       expect(response.status).toBe(200);
-      expect(response.body.totalBalance).toBe(3501.5); // Sum of all net-worth values
-      expect(response.body.nativeAndToken).toHaveLength(3); // 3 wallets
+      expect(response.body.data.totalBalance).toBe(3501.5); // Sum of all net-worth values
+      expect(response.body.data.nativeAndToken).toHaveLength(3); // 3 wallets
       expect(mockHttp.moralis).toHaveBeenCalledTimes(6); // 3 wallets * 2 calls each
     });
 
-    test('should handle network timeout errors', async () => {
+    test('should handle network timeout errors gracefully', async () => {
       mockHttp.moralis.mockRejectedValueOnce({
         code: 'ECONNABORTED',
         message: 'timeout of 5000ms exceeded',
@@ -129,7 +189,8 @@ describe('PortofolioController', () => {
         .get('/portofolios')
         .query({ wallets: '0x1234567890abcdef1234567890abcdef12345678' });
 
-      expect(response.status).toBe(500);
+      expect(response.status).toBe(200);
+      expect(response.body.data.totalBalance).toBe(0); // Should be 0 due to timeout
     });
   });
 });

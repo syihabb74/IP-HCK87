@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import Navbar from '../components/Navbar';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchMarkets } from '../slices/marketSlice';
 import http from '../utils/http';
@@ -53,10 +52,11 @@ const AiAssistant = () => {
         data : `TOP MARKET 100 CRYPTO : ${JSON.stringify(data)}\n Prompting User : ${userMessage} \n Please make response relatable with user prompting and based with TOP 100 MARKET CRYPTO`
       })
 
-      // Add AI response to conversation
+      // Add AI response to conversation - now handling new response format
       setConversation(prev => [...prev, {
         type: 'ai',
-        message: response.data.message,
+        message: response.data.message || response.data, // Handle both new and legacy format
+        data: response.data.data || null, // Store structured data if available
         timestamp: new Date()
       }]);
 
@@ -89,9 +89,7 @@ const AiAssistant = () => {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white overflow-hidden font-inter">
-      <Navbar />
-
+    <>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className={`mb-8 text-center transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <h1 className="text-3xl md:text-4xl font-extrabold mb-4 bg-gradient-to-r from-white to-cyan-400 bg-clip-text text-transparent">
@@ -199,6 +197,36 @@ const AiAssistant = () => {
                             >
                               {message.message}
                             </Markdown>
+                            {/* Display structured data if available */}
+                            {message.data && Array.isArray(message.data) && (
+                              <div className="mt-4 p-4 bg-slate-800/50 border border-slate-600 rounded-lg">
+                                <h4 className="text-sm font-semibold text-cyan-400 mb-3">📊 Structured Data</h4>
+                                <div className="overflow-x-auto">
+                                  <table className="w-full text-xs border-collapse border border-slate-500">
+                                    <thead className="bg-slate-700">
+                                      <tr>
+                                        {message.data[0] && Object.keys(message.data[0]).map(key => (
+                                          <th key={key} className="border border-slate-500 px-2 py-1 text-left text-white font-medium">
+                                            {key}
+                                          </th>
+                                        ))}
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {message.data.map((item, idx) => (
+                                        <tr key={idx} className="border-b border-slate-600 hover:bg-slate-700/30">
+                                          {Object.values(item).map((value, valueIdx) => (
+                                            <td key={valueIdx} className="border border-slate-500 px-2 py-1 text-slate-100">
+                                              {typeof value === 'number' ? value.toLocaleString() : value}
+                                            </td>
+                                          ))}
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                            )}
                           </div>
                         </div>
                       ) : (
@@ -268,7 +296,7 @@ const AiAssistant = () => {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

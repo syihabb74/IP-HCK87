@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import Navbar from '../components/Navbar';
 import WalletCard from '../components/WalletCard';
 import { ethers } from 'ethers';
 import http from '../utils/http';
@@ -193,9 +192,7 @@ const Settings = () => {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white overflow-x-hidden font-inter">
-      <Navbar />
-
+    <>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className={`mb-8 transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <h1 className="text-3xl md:text-4xl font-extrabold mb-4 bg-gradient-to-r from-white to-cyan-400 bg-clip-text text-transparent">
@@ -416,7 +413,7 @@ const Settings = () => {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

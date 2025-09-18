@@ -62,7 +62,7 @@ const Home = () => {
         <div className="max-w-7xl mx-auto">
           <div className={`text-center mb-16 transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`} style={{transitionDelay: '800ms'}}>
             <h3 className="text-4xl md:text-5xl font-extrabold mb-6 bg-gradient-to-r from-white to-cyan-400 bg-clip-text text-transparent">
-              Why Choose DexTracker?
+              Why Choose Portfolio Tracker?
             </h3>
             <p className="text-xl text-slate-400 max-w-3xl mx-auto">
               Everything you need to manage and grow your crypto portfolio in one powerful platform
@@ -152,7 +152,7 @@ const Home = () => {
             Ready to Take Control of Your Crypto Portfolio?
           </h3>
           <p className="text-xl text-slate-400 mb-12">
-            Join thousands of traders who trust DexTracker to manage their cryptocurrency investments
+            Join thousands of traders who trust Portfolio Tracker to manage their cryptocurrency investments
           </p>
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
@@ -172,7 +172,7 @@ const Home = () => {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center gap-3 mb-4 md:mb-0">
               <BrandIcon size={32} animate={true} />
-              <span className="text-2xl font-bold text-cyan-400">DexTracker</span>
+              <span className="text-2xl font-bold text-cyan-400">Portfolio Tracker</span>
             </div>
 
             <div className="flex flex-wrap gap-6 text-slate-400">
@@ -184,7 +184,7 @@ const Home = () => {
           </div>
 
           <div className="border-t border-slate-700 mt-8 pt-8 text-center text-slate-400">
-            <p>&copy; 2024 DexTracker. All rights reserved.</p>
+            <p>&copy; 2024 Portfolio Tracker. All rights reserved.</p>
           </div>
         </div>
       </footer>

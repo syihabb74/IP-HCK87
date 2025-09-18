@@ -41,8 +41,23 @@ const Login = () => {
     });
     google.accounts.id.renderButton(
       document.getElementById("googleSignIn"),
-      { theme: "outline", size: "large" }  // customization attributes
+      { 
+        theme: "outline", 
+        size: "large",
+        width: "300",
+        text: "signin_with",
+        shape: "rectangular"
+      }
     );
+    
+    // Center the Google button
+    setTimeout(() => {
+      const googleButton = document.querySelector('#googleSignIn > div');
+      if (googleButton) {
+        googleButton.style.margin = '0 auto';
+        googleButton.style.display = 'block';
+      }
+    }, 100);
     // google.accounts.id.prompt(); // Hapus ini karena konflik dengan renderButton
 
   }, [])
@@ -159,7 +174,9 @@ const Login = () => {
         </div>
 
         {/* Google Sign In */}
-        <div id="googleSignIn" className={`w-full transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{transitionDelay: '800ms'}}></div>
+        <div className={`flex justify-center transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{transitionDelay: '800ms'}}>
+          <div id="googleSignIn" className="w-full flex justify-center"></div>
+        </div>
 
         </div>
         </div>

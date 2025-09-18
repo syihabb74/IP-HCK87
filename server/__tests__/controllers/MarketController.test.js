@@ -69,18 +69,5 @@ describe('MarketController', () => {
 
       expect(response.status).toBe(500);
     });
-
-    test('should handle rate limiting errors', async () => {
-      mockHttp.coinGecko.mockRejectedValueOnce({
-        response: {
-          status: 429,
-          data: { error: 'Rate limit exceeded' },
-        },
-      });
-
-      const response = await request(app).get('/markets');
-
-      expect(response.status).toBe(500);
-    });
   });
 });

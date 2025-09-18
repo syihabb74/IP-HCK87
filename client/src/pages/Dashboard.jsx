@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import TokenCard from '../components/TokenCard';
-import Navbar from '../components/Navbar';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchWallet } from '../slices/walletSlice';
 import { fetchMarkets } from '../slices/marketSlice';
@@ -81,8 +80,7 @@ const Dashboard = () => {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white overflow-x-hidden font-inter">
-      <Navbar />
+    <>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
         <section className={`text-center mb-16 py-16 transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`}>
@@ -215,7 +213,7 @@ const Dashboard = () => {
         </section>
 
       </div>
-    </div>
+    </>
   );
 }
 

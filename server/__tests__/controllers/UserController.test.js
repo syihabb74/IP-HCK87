@@ -153,6 +153,50 @@ describe('UserController', () => {
     test('should sign in with Google successfully for existing user', async () => {
       mockModels.User.findOrCreate.mockResolvedValueOnce([
         { id: 1, email: 'test@gmail.com' },
+        false, // created = false (existing user)
+      ]);
+
+      const response = await request(app)
+        .post('/google-signin')
+        .send({ googleToken: 'valid.google.token' });
+
+      expect(response.status).toBe(200);
+      expect(response.body.access_token).toBe('mock.jwt.token');
+    });
+
+    test('should handle missing Google token', async () => {
+      const response = await request(app)
+        .post('/google-signin')
+        .send({}); // No googleToken
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe('Google token is required');
+    });
+
+    test('should handle empty request body', async () => {
+      const response = await request(app)
+        .post('/google-signin');
+        // No body at all
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe('Invalid google token');
+    });
+
+    test('should handle Google API verification error', async () => {
+      // Mock Google API to throw error
+      const mockError = new Error('Invalid token');
+      mockModels.User.findOrCreate.mockRejectedValueOnce(mockError);
+
+      const response = await request(app)
+        .post('/google-signin')
+        .send({ googleToken: 'invalid.google.token' });
+
+      expect(response.status).toBe(500);
+    });
+
+    test('should sign in with Google successfully for existing user', async () => {
+      mockModels.User.findOrCreate.mockResolvedValueOnce([
+        { id: 1, email: 'test@gmail.com' },
         false, // created = false
       ]);
 
@@ -173,10 +217,10 @@ describe('UserController', () => {
       expect(response.body.message).toBe('Google token is required');
     });
 
-    test('should handle missing request body', async () => {
+    test('should handle empty request body', async () => {
       const response = await request(app)
-        .post('/google-signin')
-        .send();
+        .post('/google-signin');
+        // No body at all
 
       expect(response.status).toBe(400);
       expect(response.body.message).toBe('Invalid google token');

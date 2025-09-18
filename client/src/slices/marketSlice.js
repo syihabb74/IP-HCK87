@@ -8,7 +8,7 @@ const marketSlice = createSlice({
         data: [],
         loading: false,
         error: '',
-        lastUpdatedAt : new Date()
+        lastUpdatedAt: Date.now() // Menggunakan timestamp (number) yang serializable
     }
     ,
     reducers: {},
@@ -19,7 +19,8 @@ const marketSlice = createSlice({
         })
         builder.addCase(fetchMarkets.fulfilled, (state, actions) => {
             state.loading = false,
-            state.data = actions.payload
+            state.data = actions.payload,
+            state.lastUpdatedAt = Date.now() // Update timestamp ketika data berhasil di-fetch
         })
         builder.addCase(fetchMarkets.rejected, (state) => {
             state.loading = false
@@ -34,10 +35,10 @@ export const marketReducer = marketSlice.reducer
 export const fetchMarkets = createAsyncThunk('market/fetchMarkets', async function fetchMarkets(params, thunkAPI) {
     try {
 
-        if (thunkAPI.getState().market.data.length > 0 && (new Date() - new Date(thunkAPI.getState().market.lastUpdatedAt) < 5 * 60 * 1000)) {
-
-            return thunkAPI.getState().market.data
-
+        // Cek apakah data sudah ada dan masih fresh (kurang dari 5 menit)
+        const currentState = thunkAPI.getState().market;
+        if (currentState.data.length > 0 && (Date.now() - currentState.lastUpdatedAt < 5 * 60 * 1000)) {
+            return currentState.data;
         }
 
         const {data} = await http({
@@ -51,8 +52,6 @@ export const fetchMarkets = createAsyncThunk('market/fetchMarkets', async functi
         return data
 
     } catch (error) {
-
-        console.error(error);
 
         throw error
 

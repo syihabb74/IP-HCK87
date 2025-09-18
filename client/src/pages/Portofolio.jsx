@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
-import Navbar from '../components/Navbar'
 import EmptyStateIcon from '../components/EmptyStateIcon'
 import TokenCard from '../components/TokenCard'
 import http from '../utils/http'
@@ -94,9 +93,7 @@ export default function Portofolio() {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white overflow-x-hidden font-inter">
-      <Navbar />
-
+    <>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className={`mb-8 transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <h1 className="text-3xl font-bold text-white mb-2">My Portfolio</h1>
@@ -226,6 +223,6 @@ export default function Portofolio() {
           </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }

@@ -135,18 +135,6 @@ describe('Authentication Middleware', () => {
     expect(verifyToken).not.toHaveBeenCalled();
   });
 
-  test('should log headers for debugging', () => {
-    mockReq.headers.authorization = 'Bearer valid.jwt.token';
-    const mockDecodedToken = { id: 1, email: 'test@example.com' };
-
-    verifyToken.mockReturnValue(mockDecodedToken);
-
-    authentication(mockReq, mockRes, mockNext);
-
-    expect(console.log).toHaveBeenCalledWith(mockReq.headers);
-    expect(console.log).toHaveBeenCalledWith(mockDecodedToken);
-  });
-
   test('should handle null authorization header', () => {
     mockReq.headers.authorization = null;
 

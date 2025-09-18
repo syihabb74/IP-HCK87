@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router';
-import Navbar from '../components/Navbar';
 import CoinCard from '../components/CoinCard';
 import TokenCard from '../components/TokenCard';
 import { useDispatch, useSelector } from 'react-redux';
@@ -111,9 +110,7 @@ const Markets = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white overflow-x-hidden font-inter">
-      <Navbar />
-
+    <>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className={`mb-8 transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
@@ -322,7 +319,7 @@ const Markets = () => {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
