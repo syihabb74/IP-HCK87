@@ -71,7 +71,7 @@ export default function Portofolio() {
       console.error('Error response:', error.response);
       const errorMessage = error.response?.data?.message || 'Failed to fetch portfolio data';
       setPortfolioError(errorMessage);
-      await errorAlert('Portfolio Error', errorMessage);
+      errorAlert('Portfolio Error', errorMessage);
     } finally {
       setIsLoadingPortfolio(false);
     }

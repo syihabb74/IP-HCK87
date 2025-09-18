@@ -42,13 +42,13 @@ const Register = () => {
         data: form
       })
 
-      await successAlert('Registration Successful!', 'Your account has been created successfully. Please login to continue.');
+      successAlert('Registration Successful!', 'Your account has been created successfully. Please login to continue.');
       navigate('/login');
 
     } catch (error) {
       console.error(error);
       const errorMessage = error.response?.data?.message || 'Registration failed. Please try again.';
-      await errorAlert('Registration Failed', errorMessage);
+      errorAlert('Registration Failed', errorMessage);
 
     }
 

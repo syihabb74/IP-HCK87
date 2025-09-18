@@ -61,7 +61,7 @@ const Dashboard = () => {
     } catch (error) {
       console.error('Error fetching portfolio:', error);
       const errorMessage = error.response?.data?.message || 'Failed to fetch portfolio data';
-      await errorAlert('Portfolio Error', errorMessage);
+      errorAlert('Portfolio Error', errorMessage);
     } finally {
       setIsLoadingPortfolio(false);
     }

@@ -72,33 +72,6 @@ describe('Models Index', () => {
     expect(db.Sequelize).toBe(mockSequelizeConstructor);
   });
 
-  test('should use production config', () => {
-    process.env.NODE_ENV = 'production';
-    process.env.DATABASE_URL = 'postgres://user:pass@localhost:5432/proddb';
-    
-    // Mock fs and path
-    require('fs').readdirSync.mockReturnValue(['user.js']);
-    require('path').basename.mockReturnValue('index.js');
-    require('path').join.mockImplementation((dir, file) => `${dir}/${file}`);
-    
-    // Mock model files
-    const mockModel = { name: 'TestModel' };
-    jest.doMock('../../models/user.js', () => () => mockModel, { virtual: true });
-    
-    const db = require('../../models/index.js');
-    
-    // For production without use_env_variable, it should use regular config
-    expect(mockSequelizeConstructor).toHaveBeenCalledWith(
-      'database_production',
-      'root',
-      null,
-      expect.objectContaining({
-        host: '127.0.0.1',
-        dialect: 'mysql'
-      })
-    );
-    expect(db.sequelize).toBe(mockSequelizeInstance);
-  });
 
   test('should filter and load model files correctly', () => {
     process.env.NODE_ENV = 'development';

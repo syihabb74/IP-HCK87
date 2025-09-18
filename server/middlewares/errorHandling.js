@@ -9,6 +9,7 @@ const errorHandling = (err,_req,res,_next) => {
         const message = err.errors && err.errors[0] && err.errors[0].message ? err.errors[0].message : 'Validation Error';
         return res.status(400).json({message});
     }
+    if (err.name === 'Forbidden') return res.status(403).json({message : err.message || 'Forbidden'});
     if (err.name === 'NotFound') return res.status(404).json({message : err.message || 'Not Found'});
     return res.status(500).json({message : 'Internal Server Error'});
 

@@ -29,12 +29,12 @@ const Login = () => {
         }
       })
       localStorage.setItem("access_token", data.access_token)
-      await successAlert('Login Successful!', 'Welcome back! You have been logged in successfully.');
+      successAlert('Login Successful!', 'Welcome back! You have been logged in successfully.');
       navigate("/dashboard")
 
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Google sign-in failed. Please try again.';
-      await errorAlert('Login Failed', errorMessage);
+      errorAlert('Login Failed', errorMessage);
     }
   }
 
@@ -95,13 +95,13 @@ const Login = () => {
       })
 
       localStorage.setItem('access_token', response.data.access_token);
-      await successAlert('Login Successful!', 'Welcome back! You have been logged in successfully.');
+      successAlert('Login Successful!', 'Welcome back! You have been logged in successfully.');
       navigate('/dashboard');
 
     } catch (error) {
       console.error(error);
       const errorMessage = error.response?.data?.message || 'Login failed. Please check your credentials.';
-      await errorAlert('Login Failed', errorMessage);
+      errorAlert('Login Failed', errorMessage);
 
     }
 
