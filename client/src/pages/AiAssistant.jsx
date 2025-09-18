@@ -63,7 +63,7 @@ const AiAssistant = () => {
     } catch (error) {
       console.error('AI Assistant Error:', error);
       const errorMessage = error.response?.data?.message || 'Failed to process your request. Please try again.';
-      await errorAlert('AI Assistant Error', errorMessage);
+      errorAlert('AI Assistant Error', errorMessage);
 
       // Add error message to conversation
       setConversation(prev => [...prev, {

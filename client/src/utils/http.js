@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const http = axios.create({
-  baseURL: 'http://localhost:3003'
+  baseURL: 'https://syihab-first-deploy.syhbsrc.site'
 });
 
 export default http;

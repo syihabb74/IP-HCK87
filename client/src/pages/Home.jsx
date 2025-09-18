@@ -1,11 +1,17 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router';
+import { Link, Navigate } from 'react-router';
 import Navbar from '../components/Navbar';
 import Logo from '../components/Logo';
 import FeatureIcon from '../components/FeatureIcon';
 import BrandIcon from '../components/BrandIcon';
+import { Navigate } from 'react-router';
+
 
 const Home = () => {
+
+  if (localStorage.getItem('access_token')) {
+        return <Navigate to="/dashboard" />
+    }
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {

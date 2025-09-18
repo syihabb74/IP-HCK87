@@ -88,10 +88,10 @@ const Settings = () => {
 
       } catch (error) {
         console.error('🔥 Error connecting to MetaMask:', error);
-        await errorAlert('MetaMask Connection Failed', 'Failed to connect to MetaMask. Please make sure MetaMask is installed and unlocked.');
+        errorAlert('MetaMask Connection Failed', 'Failed to connect to MetaMask. Please make sure MetaMask is installed and unlocked.');
       }
     } else {
-      await errorAlert('MetaMask Not Found', 'MetaMask is not installed. Please install MetaMask browser extension to connect your wallet.');
+      errorAlert('MetaMask Not Found', 'MetaMask is not installed. Please install MetaMask browser extension to connect your wallet.');
     }
   };
 
@@ -143,12 +143,12 @@ const Settings = () => {
       dispatch(fetchWallet());
 
       const successMessage = editingWallet ? 'Wallet updated successfully!' : 'Wallet added successfully!';
-      await successAlert('Success', successMessage);
+      successAlert('Success', successMessage);
 
     } catch (error) {
       console.error('Error with wallet operation:', error);
       const errorMessage = error.response?.data?.message || 'Failed to save wallet. Please try again.';
-      await errorAlert('Wallet Operation Failed', errorMessage);
+      errorAlert('Wallet Operation Failed', errorMessage);
     }
   };
 
@@ -179,11 +179,11 @@ const Settings = () => {
       });
 
       dispatch(fetchWallet());
-      await successAlert('Wallet Deleted', `Wallet "${wallet.walletName}" has been successfully removed.`);
+      successAlert('Wallet Deleted', `Wallet "${wallet.walletName}" has been successfully removed.`);
     } catch (error) {
       console.error('Error deleting wallet:', error);
       const errorMessage = error.response?.data?.message || 'Failed to delete wallet. Please try again.';
-      await errorAlert('Delete Failed', errorMessage);
+      errorAlert('Delete Failed', errorMessage);
     }
   };
   

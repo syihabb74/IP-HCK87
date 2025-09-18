@@ -2,11 +2,15 @@ import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Logo from '../components/Logo';
 import { ethers } from 'ethers';
-import { useNavigate } from 'react-router';
+import { Navigate, useNavigate } from 'react-router';
 import http from '../utils/http';
 import { successAlert, errorAlert } from '../utils/sweetAlert';
 
 const Register = () => {
+
+  if (localStorage.getItem('access_token')) {
+        return <Navigate to="/dashboard" />
+    }
   const navigate = useNavigate();
 
   const [isLoaded, setIsLoaded] = useState(false);
@@ -38,13 +42,13 @@ const Register = () => {
         data: form
       })
 
-      await successAlert('Registration Successful!', 'Your account has been created successfully. Please login to continue.');
+      successAlert('Registration Successful!', 'Your account has been created successfully. Please login to continue.');
       navigate('/login');
 
     } catch (error) {
       console.error(error);
       const errorMessage = error.response?.data?.message || 'Registration failed. Please try again.';
-      await errorAlert('Registration Failed', errorMessage);
+      errorAlert('Registration Failed', errorMessage);
 
     }
 

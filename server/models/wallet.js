@@ -18,6 +18,8 @@ module.exports = (sequelize, DataTypes) => {
       },
       allowNull: false,
       validate: {
+        notNull: { msg: "Address is required" },
+        notEmpty: { msg: "Address is required" },
         is: {
           args: /^0x[a-fA-F0-9]{40}$/,
           msg: "Invalid Ethereum address format"

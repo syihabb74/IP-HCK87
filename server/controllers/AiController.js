@@ -72,10 +72,9 @@ const formatAiResponseToJson = (aiResponse) => {
 class AiController {
     
     static async aiAnalyzeTopMarkets (req,res,next) {
+        if (!req.body) return next({name : 'BadRequest', message : `Prompt can't be empty`});
 
         const ai = new GoogleGenAI({});
-
-        if (!req.body) return next({name : 'BadRequest', message : `Prompt can't be empty`});
 
         try {
 
@@ -116,11 +115,6 @@ Create a proper json for the cryptocurrency data with your response in human tex
                 }]
             })
 
-            console.log(response.text);
-
-            console.log(response.text)
-
-            // Format response AI ke JSON yang valid
             const formattedResponse = formatAiResponseToJson(response.text);
 
 

@@ -2,10 +2,16 @@ import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Logo from '../components/Logo';
 import http from '../utils/http';
-import { useNavigate } from 'react-router';
+import { Navigate, useNavigate } from 'react-router';
 import { successAlert, errorAlert } from '../utils/sweetAlert';
 
 const Login = () => {
+
+ if (localStorage.getItem('access_token')) {
+        return <Navigate to="/dashboard" />
+    }
+  
+
   const navigate = useNavigate()
   const [isLoaded, setIsLoaded] = useState(false);
   const [form, setForm] = useState({
@@ -23,42 +29,50 @@ const Login = () => {
         }
       })
       localStorage.setItem("access_token", data.access_token)
-      await successAlert('Login Successful!', 'Welcome back! You have been logged in successfully.');
+      successAlert('Login Successful!', 'Welcome back! You have been logged in successfully.');
       navigate("/dashboard")
 
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Google sign-in failed. Please try again.';
-      await errorAlert('Login Failed', errorMessage);
+      errorAlert('Login Failed', errorMessage);
     }
   }
 
   useEffect(() => {
     setIsLoaded(true);
 
-    google.accounts.id.initialize({
-      client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID, // process.env.VITE_GOOGLE_CLIENT_ID
-      callback: handleCredentialResponse
-    });
-    google.accounts.id.renderButton(
-      document.getElementById("googleSignIn"),
-      { 
-        theme: "outline", 
-        size: "large",
-        width: "300",
-        text: "signin_with",
-        shape: "rectangular"
+    const initializeGoogle = () => {
+      if (window.google && window.google.accounts) {
+        google.accounts.id.initialize({
+          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+          callback: handleCredentialResponse
+        });
+        google.accounts.id.renderButton(
+          document.getElementById("googleSignIn"),
+          {
+            theme: "outline",
+            size: "large",
+            width: "300",
+            text: "signin_with",
+            shape: "rectangular"
+          }
+        );
+
+        // Center the Google button
+        setTimeout(() => {
+          const googleButton = document.querySelector('#googleSignIn > div');
+          if (googleButton) {
+            googleButton.style.margin = '0 auto';
+            googleButton.style.display = 'block';
+          }
+        }, 100);
+      } else {
+        // Retry after 100ms if Google SDK not ready
+        setTimeout(initializeGoogle, 100);
       }
-    );
-    
-    // Center the Google button
-    setTimeout(() => {
-      const googleButton = document.querySelector('#googleSignIn > div');
-      if (googleButton) {
-        googleButton.style.margin = '0 auto';
-        googleButton.style.display = 'block';
-      }
-    }, 100);
-    // google.accounts.id.prompt(); // Hapus ini karena konflik dengan renderButton
+    };
+
+    initializeGoogle();
 
   }, [])
   
@@ -81,13 +95,13 @@ const Login = () => {
       })
 
       localStorage.setItem('access_token', response.data.access_token);
-      await successAlert('Login Successful!', 'Welcome back! You have been logged in successfully.');
+      successAlert('Login Successful!', 'Welcome back! You have been logged in successfully.');
       navigate('/dashboard');
 
     } catch (error) {
       console.error(error);
       const errorMessage = error.response?.data?.message || 'Login failed. Please check your credentials.';
-      await errorAlert('Login Failed', errorMessage);
+      errorAlert('Login Failed', errorMessage);
 
     }
 

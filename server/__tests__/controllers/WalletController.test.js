@@ -17,11 +17,17 @@ const mockAuth = (req, res, next) => {
   next();
 };
 
+// Mock authorization middleware
+const mockAuthorization = (req, res, next) => {
+  // Simulate authorization check - assume wallet belongs to user
+  next();
+};
+
 // Test routes
 app.get('/wallets', mockAuth, WalletController.getWallets);
 app.post('/wallets', mockAuth, WalletController.createWallet);
-app.put('/wallets/:id', mockAuth, WalletController.editWallet);
-app.delete('/wallets/:id', mockAuth, WalletController.deleteWallet);
+app.put('/wallets/:id', mockAuth, mockAuthorization, WalletController.editWallet);
+app.delete('/wallets/:id', mockAuth, mockAuthorization, WalletController.deleteWallet);
 app.use(errorHandling);
 
 describe('WalletController', () => {
@@ -95,6 +101,143 @@ describe('WalletController', () => {
 
       expect(response.status).toBe(400);
       expect(response.body.message).toBe('Wallet name is required');
+    });
+
+    test('should reject invalid Ethereum address format', async () => {
+      mockModels.Wallet.create.mockRejectedValueOnce({
+        name: 'SequelizeValidationError',
+        errors: [{ message: 'Invalid Ethereum address format' }],
+      });
+
+      const response = await request(app)
+        .post('/wallets')
+        .send({
+          walletName: 'Test Wallet',
+          address: 'invalid-address',
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe('Invalid Ethereum address format');
+    });
+
+    test('should reject address without 0x prefix', async () => {
+      mockModels.Wallet.create.mockRejectedValueOnce({
+        name: 'SequelizeValidationError',
+        errors: [{ message: 'Invalid Ethereum address format' }],
+      });
+
+      const response = await request(app)
+        .post('/wallets')
+        .send({
+          walletName: 'Test Wallet',
+          address: '1234567890abcdef1234567890abcdef12345678',
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe('Invalid Ethereum address format');
+    });
+
+    test('should reject address with wrong length', async () => {
+      mockModels.Wallet.create.mockRejectedValueOnce({
+        name: 'SequelizeValidationError',
+        errors: [{ message: 'Invalid Ethereum address format' }],
+      });
+
+      const response = await request(app)
+        .post('/wallets')
+        .send({
+          walletName: 'Test Wallet',
+          address: '0x123456', // Too short
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe('Invalid Ethereum address format');
+    });
+
+    test('should reject duplicate address', async () => {
+      mockModels.Wallet.create.mockRejectedValueOnce({
+        name: 'SequelizeUniqueConstraintError',
+        errors: [{ message: 'Address already exists in the database' }],
+      });
+
+      const response = await request(app)
+        .post('/wallets')
+        .send({
+          walletName: 'Test Wallet',
+          address: '0x1234567890abcdef1234567890abcdef12345678',
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe('Address already exists in the database');
+    });
+
+    test('should require address field', async () => {
+      mockModels.Wallet.create.mockRejectedValueOnce({
+        name: 'SequelizeValidationError',
+        errors: [{ message: 'Address is required' }],
+      });
+
+      const response = await request(app)
+        .post('/wallets')
+        .send({
+          walletName: 'Test Wallet',
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe('Address is required');
+    });
+
+    test('should handle address with invalid characters', async () => {
+      mockModels.Wallet.create.mockRejectedValueOnce({
+        name: 'SequelizeValidationError',
+        errors: [{ message: 'Invalid Ethereum address format' }],
+      });
+
+      const response = await request(app)
+        .post('/wallets')
+        .send({
+          walletName: 'Test Wallet',
+          address: '0xGGGG567890abcdef1234567890abcdef12345678', // Contains G which is invalid hex
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe('Invalid Ethereum address format');
+    });
+
+    test('should accept valid uppercase hex address', async () => {
+      const walletData = {
+        walletName: 'Test Wallet',
+        address: '0X1234567890ABCDEF1234567890ABCDEF12345678',
+      };
+
+      const response = await request(app)
+        .post('/wallets')
+        .send(walletData);
+
+      expect(response.status).toBe(201);
+      expect(mockModels.Wallet.create).toHaveBeenCalledWith({
+        walletName: walletData.walletName,
+        address: walletData.address,
+        UserId: 1,
+      });
+    });
+
+    test('should accept valid mixed case hex address', async () => {
+      const walletData = {
+        walletName: 'Test Wallet',
+        address: '0x1234567890AbCdEf1234567890AbCdEf12345678',
+      };
+
+      const response = await request(app)
+        .post('/wallets')
+        .send(walletData);
+
+      expect(response.status).toBe(201);
+      expect(mockModels.Wallet.create).toHaveBeenCalledWith({
+        walletName: walletData.walletName,
+        address: walletData.address,
+        UserId: 1,
+      });
     });
   });
 
