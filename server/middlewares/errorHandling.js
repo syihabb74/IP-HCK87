@@ -1,5 +1,4 @@
 const errorHandling = (err,_req,res,_next) => {
-    console.log(err)
     if (!err || typeof err !== 'object') {
         return res.status(500).json({message : 'Internal Server Error'});
     }

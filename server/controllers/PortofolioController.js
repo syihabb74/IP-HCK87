@@ -71,7 +71,6 @@ class PortofolioController {
                 }
             };
 
-            console.log('Portfolio Response Data:', JSON.stringify(response, null, 2));
             res.status(200).json(response);
 
         } catch (error) {

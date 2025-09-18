@@ -1,6 +1,5 @@
 const { verifyToken } = require("../helpers/jwt");
 const authentication = (req, _res, next) => {
-    console.log(req.headers)
     if (!req.headers.authorization) {
         return next({ name: "Unauthorized", message: 'Invalid token' });
     }
@@ -14,7 +13,6 @@ const authentication = (req, _res, next) => {
             return next({ name: "Unauthorized", message: 'Invalid token' });
         }
         req.user = decoded;
-        console.log(req.user)
         next();
     } catch (error) {
         next(error);

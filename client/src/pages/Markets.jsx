@@ -108,7 +108,6 @@ const Markets = () => {
   const marketStats = calculateMarketStats();
 
   const handleTrade = (coinData) => {
-    console.log('Trading:', coinData);
   };
 
   return (

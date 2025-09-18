@@ -9,8 +9,6 @@ class AiController {
 
         try {
 
-            console.log("BARU MASUKK TRY CONTROLLERRRRRR")
-
             const response = await ai.models.generateContent({
                 model: "gemini-2.5-flash",
                 contents: [{
@@ -37,14 +35,11 @@ Create a proper markdown table for the cryptocurrency data.`
                 }]
             })
 
-            console.log(response.text)
             res.status(200).json({message : response.text})
 
         } catch (error) {
 
             next(error)
-            
-            console.log(error)
 
         }
 

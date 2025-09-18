@@ -1,5 +1,25 @@
-import { createSlice,createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import http from "../utils/http";
+
+export const fetchWallet = createAsyncThunk('wallet/fetchWallets', async function fetchMarkets(params,thunkAPI) {
+    try {
+
+        const {data} = await http({
+            method : 'GET',
+            url : '/wallets',
+            headers : {
+                Authorization : `Bearer ${localStorage.getItem('access_token')}`
+            }
+        })
+
+        return data
+
+    } catch (error) {
+        
+        throw error
+
+    }
+})
 
 const walletSlice = createSlice({
     name : 'wallet',
@@ -26,26 +46,3 @@ const walletSlice = createSlice({
 
 export const walletActions = walletSlice.actions;
 export const walletReducer = walletSlice.reducer
-
-export const fetchWallet = createAsyncThunk('wallet/fetchWallets', async function fetchMarkets(params,thunkAPI) {
-    try {
-
-        console.log('sadjfklasjdflkjasdfdsfjalskdfjlkasdjflkasdjfl;asdfjl')
-        
-        const {data} = await http({
-            method : 'GET',
-            url : '/wallets',
-            headers : {
-                Authorization : `Bearer ${localStorage.getItem('access_token')}`
-            }
-        })
-
-        return data
-
-    } catch (error) {
-        
-        console.log(error);
-        throw error
-
-    }
-})

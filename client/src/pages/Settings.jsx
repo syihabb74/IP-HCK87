@@ -31,12 +31,10 @@ const Settings = () => {
   }, []);
 
   useEffect(() => {
-    console.log('showAddWalletForm state changed:', showAddWalletForm);
   }, [showAddWalletForm]);
 
   useEffect(() => {
     if (walletForm.address && walletForm.walletName === 'MetaMask Wallet' && !editingWallet) {
-      console.log('Auto-showing form based on MetaMask wallet data');
       setShowAddWalletForm(true);
     }
   }, [walletForm.address, walletForm.walletName, editingWallet]);
@@ -53,8 +51,6 @@ const Settings = () => {
 
 
   const handleConnectWallet = async (isEditing = false) => {
-    console.log('🔥 handleConnectWallet called, isEditing:', isEditing);
-    console.log('🔥 Current state - showAddWalletForm:', showAddWalletForm, 'editingWallet:', editingWallet);
 
     if (typeof window.ethereum !== 'undefined') {
       try {
@@ -67,19 +63,15 @@ const Settings = () => {
         const accounts = await provider.send('eth_requestAccounts', []);
 
         const newAddress = accounts[0];
-        console.log('🔥 Got MetaMask address:', newAddress);
 
         if (isEditing) {
           // For editing, only update the address field
-          console.log('🔥 Editing mode - updating address only');
           setWalletForm(prev => ({
             ...prev,
             address: newAddress
           }));
         } else {
           // For adding new, populate form with MetaMask data
-          console.log('🔥 Adding new wallet mode');
-          console.log('🔥 Before state updates - showAddWalletForm:', showAddWalletForm);
 
           // Reset all states first
           setEditingWallet(null);
@@ -95,7 +87,6 @@ const Settings = () => {
          
         }
 
-        console.log('🔥 MetaMask connection completed');
       } catch (error) {
         console.error('🔥 Error connecting to MetaMask:', error);
         await errorAlert('MetaMask Connection Failed', 'Failed to connect to MetaMask. Please make sure MetaMask is installed and unlocked.');
@@ -169,8 +160,6 @@ const Settings = () => {
   };
 
   const handleEditWallet = (wallet) => {
-    console.log('Edit wallet:', wallet);
-  console.log('Current state - showAddWalletForm:', showAddWalletForm, 'editingWallet:', editingWallet);
     // Populate form with existing wallet data
     setWalletForm({
       address: wallet.address,
@@ -199,9 +188,6 @@ const Settings = () => {
     }
   };
   
-
-  console.log(data, "iniiiiiiiii dataaaaaaaaa")
-
 
   
 
@@ -288,7 +274,6 @@ const Settings = () => {
             </div>
 
             {/* Add/Edit Wallet Form */}
-            {console.log('🔥 Render check - showAddWalletForm:', showAddWalletForm, 'editingWallet:', editingWallet, 'walletForm:', walletForm)}
             {showAddWalletForm ? (
               <div className="mb-6 bg-slate-700/50 border border-slate-600 rounded-xl p-6">
                 <div className="flex items-center justify-between mb-4">
@@ -364,7 +349,7 @@ const Settings = () => {
                 </form>
               </div>
             ) : (
-              console.log('Form not rendered because showAddWalletForm is false')
+              null
             )}
 
             <div className="space-y-4">

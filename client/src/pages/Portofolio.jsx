@@ -16,7 +16,6 @@ export default function Portofolio() {
   const [portfolioError, setPortfolioError] = useState(null);
 
   useEffect(() => {
-    console.log('Wallets from Redux:', wallets);
 
     // Handle different possible wallet data structures
     const walletsArray = wallets?.Wallets || wallets?.data?.Wallets || wallets || [];
@@ -26,7 +25,6 @@ export default function Portofolio() {
       const params = new URLSearchParams();
       params.set('wallets', addresses);
       setSearchParams(params);
-      console.log('Setting wallet addresses in URL:', addresses);
     }
   }, [wallets, searchParams]);
 
@@ -62,17 +60,12 @@ export default function Portofolio() {
         }
       });
 
-      console.log('Full Portfolio Response:', response);
-      console.log('Portfolio Response Data:', response.data);
-
       // Handle the new server response structure
       if (response.data && response.data.success && response.data.data) {
         setPortfolioData(response.data.data);
-        console.log('Setting Portfolio Data:', response.data.data);
       } else {
         // Fallback for old response structure
         setPortfolioData(response.data);
-        console.log('Using fallback portfolio data:', response.data);
       }
     } catch (error) {
       console.error('Error fetching portfolio:', error);
@@ -97,8 +90,6 @@ export default function Portofolio() {
   useEffect(() => {
     setIsLoaded(true);
   }, []);
-
-  console.log(portfolioData, '<< ini portfolio data')
 
 
 
@@ -149,7 +140,6 @@ export default function Portofolio() {
                 </div>
               ) : portfolioData?.nativeAndToken ? (
                 (() => {
-                  console.log('Processing nativeAndToken:', portfolioData.nativeAndToken);
 
                   // Ensure nativeAndToken is an array
                   const tokensArray = Array.isArray(portfolioData.nativeAndToken)
@@ -177,9 +167,6 @@ export default function Portofolio() {
                     const symbol = token.symbol || 'UNKNOWN';
                     const tokenValue = parseFloat(token.usd_value || 0);
                     const tokenBalance = parseFloat(token.balance_formatted || token.balance || 0);
-
-                    console.log(`Processing token: ${symbol}, Value: ${tokenValue}, Balance: ${tokenBalance}`);
-
                     if (aggregatedTokens[symbol]) {
                       // Add to existing token
                       aggregatedTokens[symbol].totalValue += tokenValue;
@@ -196,7 +183,6 @@ export default function Portofolio() {
                   });
 
                   const tokensList = Object.values(aggregatedTokens);
-                  console.log('Aggregated tokens:', tokensList);
 
                   if (tokensList.length === 0) {
                     return (

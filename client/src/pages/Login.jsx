@@ -27,7 +27,6 @@ const Login = () => {
       navigate("/dashboard")
 
     } catch (error) {
-      console.log(error);
       const errorMessage = error.response?.data?.message || 'Google sign-in failed. Please try again.';
       await errorAlert('Login Failed', errorMessage);
     }
@@ -35,8 +34,6 @@ const Login = () => {
 
   useEffect(() => {
     setIsLoaded(true);
-
-    console.log('aaaaaaaaaaaaaaaaaaaaaa*20aaaa')
 
     google.accounts.id.initialize({
       client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID, // process.env.VITE_GOOGLE_CLIENT_ID
@@ -86,9 +83,6 @@ const Login = () => {
     e.preventDefault();
     loginSubmit();
   } 
-
-
-  console.log(form);
 
 
   return (
