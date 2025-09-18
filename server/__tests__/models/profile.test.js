@@ -1,3 +1,18 @@
+// Mock the entire models module first
+jest.mock('../../models', () => ({
+  Profile: {
+    create: jest.fn(),
+    findOne: jest.fn(),
+    findAll: jest.fn(),
+    belongsTo: jest.fn(),
+    beforeValidate: jest.fn(),
+    associate: jest.fn()
+  },
+  User: {
+    hasOne: jest.fn()
+  }
+}));
+
 const { Profile } = require('../../models');
 
 describe('Profile Model', () => {

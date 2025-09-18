@@ -30,6 +30,27 @@ jest.mock('path', () => ({
   join: jest.fn()
 }));
 
+// Mock config.json to ensure test database configuration
+jest.mock('../../config/config.json', () => ({
+  test: {
+    username: 'postgres',
+    password: 'postgres',
+    database: 'ip_testing',
+    host: '127.0.0.1',
+    dialect: 'postgres'
+  },
+  development: {
+    username: 'postgres',
+    password: 'postgres',
+    database: 'ip_dev',
+    host: '127.0.0.1',
+    dialect: 'postgres'
+  },
+  production: {
+    use_env_variable: 'DATABASE_URL'
+  }
+}));
+
 describe('Models Index', () => {
   let originalEnv;
   
@@ -43,24 +64,24 @@ describe('Models Index', () => {
     process.env.NODE_ENV = originalEnv;
   });
 
-  test('should use development config by default', () => {
-    process.env.NODE_ENV = 'development';
-    
+  test('should use test config in test environment', () => {
+    process.env.NODE_ENV = 'test';
+
     // Mock fs and path
     require('fs').readdirSync.mockReturnValue(['user.js', 'wallet.js', 'profile.js']);
     require('path').basename.mockReturnValue('index.js');
     require('path').join.mockImplementation((dir, file) => `${dir}/${file}`);
-    
+
     // Mock model files
     const mockModel = { name: 'TestModel', associate: jest.fn() };
     jest.doMock('../../models/user.js', () => () => mockModel, { virtual: true });
     jest.doMock('../../models/wallet.js', () => () => mockModel, { virtual: true });
     jest.doMock('../../models/profile.js', () => () => mockModel, { virtual: true });
-    
+
     const db = require('../../models/index.js');
-    
+
     expect(mockSequelizeConstructor).toHaveBeenCalledWith(
-      'ip_dev',
+      'ip_testing',
       'postgres',
       'postgres',
       expect.objectContaining({
