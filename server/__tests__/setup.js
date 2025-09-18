@@ -1,5 +1,8 @@
 // Test setup and global configurations
-process.env.NODE_ENV = 'test';
+// Only set NODE_ENV to test if it's not already set
+if (!process.env.NODE_ENV) {
+  process.env.NODE_ENV = 'test';
+}
 process.env.SECRET_JWT_KEY = 'test_jwt_secret';
 process.env.GOOGLE_CLIENT_ID = 'test_google_client_id';
 process.env.MORALIS_API_KEY = 'test_moralis_key';
