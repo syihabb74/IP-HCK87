@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Logo from '../components/Logo';
-import { ethers } from 'ethers';
-import { Navigate, useNavigate } from 'react-router';
+import { Link, Navigate, useNavigate } from 'react-router';
 import http from '../utils/http';
 import { successAlert, errorAlert } from '../utils/sweetAlert';
 
@@ -146,9 +145,9 @@ const Register = () => {
           <div className={`text-center transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{transitionDelay: '1000ms'}}>
             <p className="text-slate-400 text-sm">
               Already have an account?{' '}
-              <a href="/login" className="text-cyan-400 hover:text-cyan-300 transition-colors font-semibold hover:underline">
+              <Link to="/login" className="text-cyan-400 hover:text-cyan-300 transition-colors font-semibold hover:underline">
                 Sign In
-              </a>
+              </Link>
             </p>
           </div>
         </div>
