@@ -2,11 +2,15 @@ import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Logo from '../components/Logo';
 import { ethers } from 'ethers';
-import { useNavigate } from 'react-router';
+import { Navigate, useNavigate } from 'react-router';
 import http from '../utils/http';
 import { successAlert, errorAlert } from '../utils/sweetAlert';
 
 const Register = () => {
+
+  if (localStorage.getItem('access_token')) {
+        return <Navigate to="/dashboard" />
+    }
   const navigate = useNavigate();
 
   const [isLoaded, setIsLoaded] = useState(false);
